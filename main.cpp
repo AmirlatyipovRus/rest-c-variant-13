@@ -36,7 +36,7 @@ int main() {
     Server svr;
     srand(static_cast<unsigned int>(time(nullptr)));
 
-    cout << "[INIT] Starting minimalist cross-platform HTTP server..." << endl;
+    cout << "[INIT] Starting cross-platform HTTP server..." << endl;
 
     svr.set_pre_routing_handler([](const Request& req, Response& res) {
         string token = "";
