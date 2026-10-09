@@ -99,7 +99,7 @@
         <table>
             <thead>
                 <tr>
-                    <th style="width: 85px;">Параметр</th>
+                    <th style="width: 90px;">Параметр</th>
                     <th>Назначение</th>
                     <th>По умолчанию</th>
                     <th>Обязательный</th>
@@ -110,7 +110,7 @@
                     <td><code>Authorization</code></td>
                     <td>Токен сессии (Header: <code>Bearer TKXXXXX</code>)</td>
                     <td>Нет</td>
-                    <td>Да *</td>
+                    <td>Да</td>
                 </tr>
                 <tr>
                     <td><code>data</code></td>
@@ -168,10 +168,10 @@
 
     <!-- Эндпоинт 1 -->
     <div class="endpoint-card">
-        <div class="method-path">GET /api/v1.1/guest/counters</div>
+        <div class="method-path">GET /api/v1.1/counters</div>
         <p>Показатели системы: количество аккаунтов, успешных расчеток и ошибок</p>
         <div class="curl-box">
-            <div class="curl-text" id="c-count">curl -X GET "http://localhost:8080/api/v1.1/guest/counters"</div>
+            <div class="curl-text" id="c-count">curl -X GET "http://localhost:8080/api/v1.1/counters"</div>
             <button class="copy-btn" onclick="copyText(this, 'c-count')">Скопировать</button>
         </div>
         <details>
@@ -189,10 +189,10 @@
 
     <!-- Эндпоинт 2 -->
     <div class="endpoint-card">
-        <div class="method-path">GET /api/v1.1/guest/history</div>
+        <div class="method-path">GET /api/v1.1/history</div>
         <p>Журнал работы системы</p>
         <div class="curl-box">
-            <div class="curl-text" id="c-hist">curl -X GET "http://localhost:8080/api/v1.1/guest/history?limit=2&offset=27&date_from=2026-10-01&date_to=2026-10-09"</div>
+            <div class="curl-text" id="c-hist">curl -X GET "http://localhost:8080/api/v1.1/history?limit=2&offset=27&date_from=2026-10-01&date_to=2026-10-09"</div>
             <button class="copy-btn" onclick="copyText(this, 'c-hist')">Скопировать</button>
         </div>
         <details>

@@ -8,7 +8,6 @@ string get_time_str(chrono::system_clock::time_point tp);
 
 inline void setup_admin_routes(Server& svr) {
     
-    // 1. GET /api/v1.1/admin/stats
     svr.Get("/api/v1.1/admin/stats", [](const Request&, Response& res) {
         stringstream json;
         json << "{\n  \"limit\": 1,\n  \"offset\": 0,\n  \"total_records\": 45,\n  \"response_time\": \"" << get_time_str(chrono::system_clock::now()) << "\",\n"
@@ -16,7 +15,6 @@ inline void setup_admin_routes(Server& svr) {
         res.set_content(json.str(), "application/json; charset=utf-8");
     });
 
-    // 2. GET /api/v1.1/admin/run-tests
     svr.Get("/api/v1.1/admin/run-tests", [](const Request&, Response& res) {
         string report = 
             "==================================================\n"
