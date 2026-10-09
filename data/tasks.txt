@@ -1,0 +1,416 @@
+ГРУППА 1. ЦИФРОВЫЕ ПРОДУКТЫ И МАРКЕТИНГ
+Вариант 1. Модуль предиктивной оценки юнит-экономики (Unit Economics Engine)
+Тема: Проектирование компонента анализа маржинальности цифрового продукта.
+Входные параметры и ограничения:
+  - price (double) - цена единицы товара. Ограничение: price >= cogs 1.05
+  - cogs (double) - себестоимость производства единицы товара. Ограничение: cogs > 0.0
+  - cac (double) - стоимость привлечения одного клиента. Ограничение: cac >= 0.01
+  - conversion_rate (double) - конверсия посетителей в покупатели (в %). Ограничение: 0.0 < conversion_rate <= 100.0
+  - churn_rate (double) - ежемесячный отток клиентов (в %). Ограничение: 0.0 < churn_rate <= 100.0
+Формулы для расчетов (C++):
+  - ltv = (price - cogs) / (churn_rate / 100.0)
+  - ltv_to_cac_ratio = ltv / cac
+  - marginal_profit = 1000.0 (conversion_rate / 100.0) (price - cogs) - (1000.0 (conversion_rate / 100.0) cac)
+Пример контракта (Вход -> Выход):
+  - Вход: price = 150.0, cogs = 50.0, cac = 20.0, conversion_rate = 2.5, churn_rate = 5.0
+  - Выход: ltv = 2000.0, ltv_to_cac_ratio = 100.0, marginal_profit = 2000.0
+
+Вариант 2. Компонент расчета окупаемости рекламных инвестиций (ROAS & ROMI Tracker)
+Тема: Проектирование сервиса сквозной аналитики эффективности маркетинга.
+Входные параметры и ограничения:
+  - marketing_spend (double) - бюджет рекламной кампании. Ограничение: marketing_spend >= 1000.0
+  - attributed_revenue (double) - выручка с кампании. Ограничение: attributed_revenue >= 0.0
+  - agency_fee (double) - фиксированная комиссия агентства. Ограничение: agency_fee >= 0.0
+  - production_cost (double) - затраты на производство креативов. Ограничение: production_cost >= 0.0 и (agency_fee + production_cost) <= marketing_spend 2.0
+  - period_days (int) - длительность кампании в днях. Ограничение: 1 <= period_days <= 365
+Формулы для расчетов (C++):
+  - roas = attributed_revenue / marketing_spend
+  - net_marketing_profit = attributed_revenue - (marketing_spend + agency_fee + production_cost)
+  - romi_percentage = (net_marketing_profit / (marketing_spend + agency_fee + production_cost)) 100.0
+Пример контракта (Вход -> Выход):
+  - Вход: marketing_spend = 10000.0, attributed_revenue = 25000.0, agency_fee = 1500.0, production_cost = 500.0, period_days = 30
+  - Выход: roas = 2.5, net_marketing_profit = 13000.0, romi_percentage = 108.33
+
+Вариант 3. Анализатор пожизненной ценности когорт пользователей (Cohort LTV Predictor)
+Тема: Проектирование модуля предиктивного когортного анализа для SaaS.
+Входные параметры и ограничения:
+  - initial_cohort_size (int) - изначальный размер когорты. Ограничение: initial_cohort_size >= 100
+  - average_check (double) - средний чек одной покупки. Ограничение: average_check > 0.0
+  - purchase_frequency_monthly (double) - среднее кол-во покупок в месяц. Ограничение: 0.05 <= purchase_frequency_monthly <= 31.0
+  - retention_month_1 (double) - % удержания в 1-й месяц. Ограничение: 0.0 <= retention_month_1 <= 100.0
+  - decay_rate (double) - скорость падения удержания (в %). Ограничение: 0.0 < decay_rate <= 100.0
+Формулы для расчетов (C++):
+  - half_life_months = log(0.5) / log(1.0 - (decay_rate / 100.0))
+  - clv = 0.0; double current_ret = retention_month_1 / 100.0; запустить цикл от 1 до 12 месяцев: { clv += average_check purchase_frequency_monthly current_ret; current_ret *= (1.0 - (decay_rate / 100.0)); }
+  - predicted_total_revenue = initial_cohort_size clv
+Пример контракта (Вход -> Выход):
+  - Вход: initial_cohort_size = 1000, average_check = 50.0, purchase_frequency_monthly = 1.0, retention_month_1 = 80.0, decay_rate = 10.0
+  - Выход: half_life_months = 6.58, clv = 287.03, predicted_total_revenue = 287030.45
+
+Вариант 4. Оптимизатор динамического ценообразования (Dynamic Pricing Core)
+Тема: Проектирование алгоритма адаптивного изменения цен под воздействием внешних факторов.
+Входные параметры и ограничения:
+  - base_price (double) - базовая цена. Ограничение: base_price > 0.0
+  - competitor_price (double) - цена ключевого конкурента. Ограничение: competitor_price >= base_price 0.2
+  - current_stock (int) - текущий товарный остаток на складе. Ограничение: current_stock >= 0. Если current_stock == 0, сразу генерировать исключение.
+  - demand_surge_factor (double) - коэффициент всплеска спроса. Ограничение: 0.5 <= demand_surge_factor <= 5.0
+  - min_allowable_margin (double) - минимально допустимая маржа (в %). Ограничение: 0.0 <= min_allowable_margin <= 90.0
+Формулы для расчетов (C++):
+  - scarcity_multiplier = (current_stock < 10) ? 1.25 : 1.0
+  - optimized_price = base_price demand_surge_factor scarcity_multiplier
+  - Корректировка: если (optimized_price < competitor_price 0.95) optimized_price = competitor_price 0.95; если (optimized_price < base_price (1.0 + min_allowable_margin / 100.0)) optimized_price = base_price (1.0 + min_allowable_margin / 100.0);
+Пример контракта (Вход -> Выход):
+  - Вход: base_price = 100.0, competitor_price = 110.0, current_stock = 5, demand_surge_factor = 1.2, min_allowable_margin = 10.0
+  - Выход: optimized_price = 150.0
+
+Вариант 5. Калькулятор упущенной выгоды от оттока клиентов (Churn Leakage Estimator)
+Тема: Проектирование системы мониторинга финансовых потерь в подписочных сервисах.
+Входные параметры и ограничения:
+  - active_users_start (int) - активные подписчики на начало месяца. Ограничение: active_users_start >= 10
+  - churned_users (int) - количество ушедших подписчиков за месяц. Ограничение: 0 <= churned_users < active_users_start
+  - arpu (double) - средний доход с одного подписчика в месяц. Ограничение: arpu > 0.0
+  - winback_cost_per_user (double) - стоимость возврата одного пользователя. Ограничение: winback_cost_per_user > 0.0
+Формулы для расчетов (C++):
+  - churn_rate_percentage = ((double)churned_users / active_users_start) 100.0
+  - monthly_revenue_leakage = churned_users arpu
+  - total_recovery_budget = churned_users winback_cost_per_user
+Пример контракта (Вход -> Выход):
+  - Вход: active_users_start = 5000, churned_users = 250, arpu = 30.0, winback_cost_per_user = 15.0
+  - Выход: churn_rate_percentage = 5.0, monthly_revenue_leakage = 7500.0, total_recovery_budget = 3750.0
+
+ГРУППА 2. КОРПОРАТИВНЫЕ ФИНАНСЫ И ИНВЕСТИЦИИ (FINTECH & INVESTMENTS)
+
+Вариант 6. Анализатор возврата инвестиций в IT-инфраструктуру (ROI & Payback Estimator)
+Тема: Проектирование экспертной системы оценки капиталовложений в аппаратное/программное обеспечение.
+Входные параметры и ограничения:
+  - capital_expense (double) - капитальные затраты. Ограничение: capital_expense >= 1000.0
+  - implementation_cost (double) - стоимость внедрения и обучения. Ограничение: implementation_cost >= 0.0
+  - monthly_savings (double) - ежемесячное сокращение издержек. Ограничение: monthly_savings > 0.0
+  - operating_cost (double) - ежемесячная стоимость техподдержки решения. Ограничение: operating_cost >= 0.0 и monthly_savings >= operating_cost 1.1
+  - target_period_months (int) - горизонт планирования в месяцах. Ограничение: 3 <= target_period_months <= 120
+Формулы для расчетов (C++):
+  - total_investment = capital_expense + implementation_cost
+  - payback_period_months = total_investment / (monthly_savings - operating_cost)
+  - roi_percentage = (((monthly_savings - operating_cost) target_period_months - total_investment) / total_investment) 100.0
+Пример контракта (Вход -> Выход):
+  - Вход: capital_expense = 8000.0, implementation_cost = 2000.0, monthly_savings = 1500.0, operating_cost = 500.0, target_period_months = 24
+  - Выход: payback_period_months = 10.0, roi_percentage = 140.0
+
+Вариант 7. Вычислительный модуль лизинговых платежей (Lease Annuity Calculator)
+Тема: Проектирование финансового ядра обработки лизинговых сделок для b2b-сектора.
+Входные параметры и ограничения:
+  - asset_value (double) - рыночная стоимость приобретаемого имущества. Ограничение: asset_value > 0.0
+  - down_payment (double) - первоначальный авансовый платеж. Ограничение: 0.0 <= down_payment <= asset_value 0.9
+  - lease_term_months (int) - срок договора лизинга в месяцах. Ограничение: 6 <= lease_term_months <= 84
+  - annual_interest_rate (double) - годовая ставка (в %). Ограничение: 1.0 <= annual_interest_rate <= 150.0
+  - residual_value (double) - выкупная стоимость имущества в конце срока. Ограничение: 0.0 <= residual_value <= asset_value 0.2
+Формулы для расчетов (C++):
+  - r = annual_interest_rate / (12.0 100.0)
+  - s = asset_value - down_payment
+  - monthly_payment = (s r pow(1.0 + r, lease_term_months) - residual_value r) / (pow(1.0 + r, lease_term_months) - 1.0)
+  - total_overpayment = (monthly_payment lease_term_months) + down_payment + residual_value - asset_value
+Пример контракта (Вход -> Выход):
+  - Вход: asset_value = 100000.0, down_payment = 20000.0, lease_term_months = 12, annual_interest_rate = 12.0, residual_value = 10000.0
+  - Выход: monthly_payment = 6303.49, total_overpayment = 5641.87
+
+Вариант 8. Модуль оценки средневзвешенной стоимости капитала (WACC Calculator)
+Тема: Проектирование компонента оценки стоимости корпоративного финансирования.
+Входные параметры и ограничения:
+  - market_value_equity (double) - рыночная стоимость собственного капитала. Ограничение: market_value_equity > 0.0
+Используйте код с осторожностью.
+market_value_debt (double) - рыночная стоимость заемного капитала. Ограничение: market_value_debt > 0.0 и market_value_equity + market_value_debt >= 100000.0
+cost_of_equity (double) - требуемая доходность по собственному капиталу (в %). Ограничение: 0.1 <= cost_of_equity <= 100.0
+cost_of_debt (double) - процентная ставка по долговым обязательствам (в %). Ограничение: 0.1 <= cost_of_debt <= 100.0
+tax_rate (double) - ставка налога на прибыль (в %). Ограничение: 0.0 <= tax_rate <= 70.0
+Формулы для расчетов (C++):
+	v = market_value_equity + market_value_debt
+	equity_weight = market_value_equity / v
+	debt_weight = market_value_debt / v
+	wacc_percentage = (equity_weight (cost_of_equity / 100.0) + debt_weight (cost_of_debt / 100.0) (1.0 - (tax_rate / 100.0))) 100.0
+Пример контракта (Вход -> Выход):
+	Вход: market_value_equity = 600000.0, market_value_debt = 400000.0, cost_of_equity = 15.0, cost_of_debt = 10.0, tax_rate = 20.0
+	Выход: equity_weight = 0.6, wacc_percentage = 12.2
+
+Вариант 9. Оценщик чистой приведенной стоимости проекта (NPV & Profitability Indexer)
+Тема: Проектирование инвестиционного ядра многокритериального анализа проектов.
+Входные параметры и ограничения:
+	initial_investment (double) - стартовые инвестиции в проект. Ограничение: initial_investment > 0.0
+	annual_cash_flow (double) - ожидаемый ежегодный чистый приток денежных средств. Ограничение: annual_cash_flow > 0.0
+	discount_rate (double) - ставка дисконтирования (в %). Ограничение: 0.5 <= discount_rate <= 100.0
+	project_lifetime_years (int) - срок жизни проекта в годах. Ограничение: 1 <= project_lifetime_years <= 50
+Формулы для расчетов (C++):
+	npv = 0.0; запустить цикл от t=1 до project_lifetime_years: { npv += annual_cash_flow / pow(1.0 + (discount_rate / 100.0), t); } npv -= initial_investment;
+	profitability_index = (npv + initial_investment) / initial_investment
+	is_viable = (npv >= 0.0)
+Пример контракта (Вход -> Выход):
+	Вход: initial_investment = 50000.0, annual_cash_flow = 15000.0, discount_rate = 10.0, project_lifetime_years = 5
+	Выход: npv = 6861.80, profitability_index = 1.137, is_viable = true
+
+Вариант 10. Модуль дисконтирования и оценки будущей стоимости (Future Value Processor)
+Тема: Проектирование вычислительного компонента для сложных финансовых начислений.
+Входные параметры и ограничения:
+	present_value (double) - текущая сумма денежных средств. Ограничение: present_value >= 100.0
+	annual_rate (double) - номинальная годовая процентная ставка (в %). Ограничение: 0.1 <= annual_rate <= 200.0
+	years (int) - срок размещения капитала в годах. Ограничение: 1 <= years <= 50
+	compounding_periods_per_year (int) - частота капитализации. Ограничение: строго дискретные значения 1, 4 или 12.
+Формулы для расчетов (C++):
+	future_value = present_value pow(1.0 + ((annual_rate / 100.0) / compounding_periods_per_year), years compounding_periods_per_year)
+	total_compound_interest = future_value - present_value
+	inflation_adjusted_value = future_value / pow(1.0 + 0.05, years)
+Пример контракта (Вход -> Выход):
+	Вход: present_value = 10000.0, annual_rate = 8.0, years = 3, compounding_periods_per_year = 12
+	Выход: future_value = 12702.37, total_compound_interest = 2702.37, inflation_adjusted_value = 10972.84
+
+ГРУППА 3. ОПЕРАЦИОННЫЙ МЕНЕДЖМЕНТ И ЛОГИСТИКА
+
+Вариант 11. Ядро расчета тарифов распределенной логистики (Logistics Cost Core)
+Вход: length, width, height (double, [1.0, 300.0] см), physical_weight (double, [0.01, 2000.0] кг), distance_km (double, [1.0, 12000.0] км), fragility_index (int, [1, 3]), base_tariff_per_km (double, >0.0)
+Формулы:
+	volumetric_weight = (length width height) / 5000.0
+	billable_weight = (physical_weight > volumetric_weight) ? physical_weight : volumetric_weight
+	final_delivery_cost = distance_km base_tariff_per_km (1.0 + (fragility_index - 1) 0.5) (billable_weight 0.1)
+Пример: Вход: 50x40x30 см, вес 10 кг, дистанция 500 км, хрупкость 2, тариф 0.5 -> Выход: volumetric_weight = 12.0, billable_weight = 12.0, final_delivery_cost = 450.0
+
+Вариант 12. Сервис оптимизации управления складскими запасами (Inventory Optimization Core)
+Вход: average_daily_sales (double, >0.0), lead_time_days (int, [1, 365]), supplier_reliability (double, [0.1, 1.0]), holding_cost_per_year (double, >0.0)
+Формулы:
+	safety_stock = average_daily_sales lead_time_days (1.0 - supplier_reliability)
+	reorder_point = (average_daily_sales lead_time_days) + safety_stock
+	optimal_order_quantity = sqrt((2.0 average_daily_sales 365.0 100.0) / holding_cost_per_year)
+Пример: Вход: 50.0, 10 дней, надежность 0.8, стоимость хранения 5.0 -> Выход: safety_stock = 100.0, reorder_point = 600.0, optimal_order_quantity = 854.40
+
+Вариант 13. Анализатор утилизации и эффективности автопарка (Fleet Utilization Evaluator)
+Вход: total_vehicles (int, >0), active_vehicles_day (int, [1, total_vehicles]), total_fuel_consumed (double, >0.0), total_km_driven (double, >0.0, пробег/активные машины <= 1500 км), average_fuel_price (double, >0.0)
+Формулы:
+	utilization_rate_percentage = ((double)active_vehicles_day / total_vehicles) 100.0
+	average_consumption_per_100km = (total_fuel_consumed / total_km_driven) 100.0
+	cost_per_km = (total_fuel_consumed average_fuel_price) / total_km_driven
+Пример: Вход: 20 машин, 15 активных, 300 литров, 3000 км пробег, цена топлива 1.5 -> Выход: utilization = 75.0%, consumption = 10.0л, cost_per_km = 0.15
+
+Вариант 14. Модуль планирования маршрутных окон (Delivery Time-Window Allocator)
+Вход: total_orders (int, >=1), available_couriers (int, >=1), avg_service_time_mins (double, >0), avg_transit_time_mins (double, >0), shift_duration_hours (double, >0, service+transit <= shift*60)
+Формулы:
+	required_courier_hours = (total_orders (avg_service_time_mins + avg_transit_time_mins)) / 60.0
+	total_available_hours = available_couriers shift_duration_hours
+	unallocated_orders_count = (required_courier_hours > total_available_hours) ? (int)((required_courier_hours - total_available_hours) 60.0 / (avg_service_time_mins + avg_transit_time_mins)) : 0
+	fleet_efficiency_index = (required_courier_hours / total_available_hours)
+Пример: Вход: 100 заказов, 5 курьеров, 15 мин обслуживание, 20 мин путь, смена 8 часов -> Выход: required = 58.33ч, available = 40.0ч, unallocated = 31, efficiency = 1.45
+
+Вариант 15. Калькулятор совокупной стоимости владения складом (Warehouse TCO Calculator)
+Вход: rent_square_meter_cost (double, >0), total_area (double, [10.0, 500000.0]), electricity_and_utility_monthly (double, >=0), staff_salary_fund (double, >= total_area 0.5), average_pallet_throughput_monthly (double, >=0)
+Формулы:
+	monthly_fixed_costs = (rent_square_meter_cost total_area) + electricity_and_utility_monthly + staff_salary_fund
+	storage_cost_per_pallet = (average_pallet_throughput_monthly > 0) ? (monthly_fixed_costs / average_pallet_throughput_monthly) : monthly_fixed_costs
+	break_even_throughput = monthly_fixed_costs / 15.0 (при условном доходе 15 за паллету)
+Пример: Вход: тариф 10.0, площадь 1000 кв.м, коммуналка 2000.0, зарплаты 5000.0, паллеты 2000 -> Выход: fixed = 17000.0, cost_per_pallet = 8.50, break_even = 1133.33
+
+ГРУППА 4. УПРАВЛЕНИЕ РИСКАМИ И БЕЗОПАСНОСТЬ
+
+Вариант 16. Алгоритм скоринга и оценки кредитных рисков контрагентов (Credit Risk Scoring Engine)
+Вход: annual_revenue (double, >0.0), total_debt (double, [0.0, annual_revenue 10.0]), net_profit (double), delinquency_days (int, [0, 365]), requested_credit_amount (double, >0.0)
+Формулы:
+	debt_to_revenue_ratio = total_debt / annual_revenue
+	credit_score = 100.0 - (debt_to_revenue_ratio 30.0) - (delinquency_days 0.5) + (net_profit > 0 ? 10.0 : -15.0) -> ограничить результат от 0.0 до 100.0
+	max_approved_limit = (credit_score > 50.0) ? (annual_revenue 0.1 (credit_score / 100.0)) : 0.0
+Пример: Вход: выручка 1,000,000, долг 200,000, прибыль 100,000, просрочки 10 дней, кредит 50,000 -> Выход: debt_to_revenue = 0.2, score = 99.0, max_approved = 99000.0
+
+Вариант 17. Оценщик профессиональных рисков и страховых тарифов (Workplace Risk Premium Engine)
+Вход: base_insurance_rate (double, >0.0), total_employees (int, >=1), hazardous_conditions_count (int, [0, total_employees]), incidents_past_year (int, [0, total_employees 3])
+Формулы:
+	risk_multiplier = 1.0 + ((double)hazardous_conditions_count / total_employees) 0.8 + ((double)incidents_past_year / total_employees) 1.2
+	final_premium_per_employee = base_insurance_rate risk_multiplier
+	total_annual_insurance_cost = total_employees final_premium_per_employee
+Пример: Вход: базовая ставка 100.0, 50 сотрудников, 10 опасных мест, 2 инцидента -> Выход: multiplier = 1.208, premium = 120.80, total_cost = 6040.0
+
+Вариант 18. Модуль финансового стресс-тестирования ликвидности (Liquidity Stress Tester)
+Вход: liquid_assets (double, >=0.0), short_term_liabilities (double, >0.0), expected_cash_inflow_30d (double, >=0.0), revenue_drop_scenario_percentage (double, [1.0, 99.0])
+Формулы:
+	current_liquidity_ratio = liquid_assets / short_term_liabilities
+	stressed_inflow = expected_cash_inflow_30d (1.0 - revenue_drop_scenario_percentage / 100.0)
+	stressed_liquidity_ratio = (liquid_assets + stressed_inflow) / short_term_liabilities
+	survival_days_no_inflow = (short_term_liabilities > 0) ? (liquid_assets / (short_term_liabilities / 30.0)) : 999.0
+Пример: Вход: активы 50,000, долги 40,000, приток 30,000, падение 50% -> Выход: current = 1.25, stressed_ratio = 1.625, survival_days = 37.5
+
+Вариант 19. Калькулятор ущерба и непрерывности бизнеса (Business Impact & Downtime Quantifier)
+Вход: hourly_operational_revenue (double, >0.0), downtime_duration_hours (double, [0.01, 720.0]), sla_penalty_per_hour (double, >=0.0), data_recovery_flat_fee (double, >=0.0)
+Формулы:
+	lost_revenue = hourly_operational_revenue downtime_duration_hours
+	total_contractual_penalties = sla_penalty_per_hour downtime_duration_hours
+	total_financial_impact = lost_revenue + total_contractual_penalties + data_recovery_flat_fee
+Пример: Вход: выручка в час 2000.0, простой 4.5 часа, штраф 500.0/час, восстановление 3000.0 -> Выход: lost_rev = 9000.0, penalties = 2250.0, total_impact = 14250.0
+
+Вариант 20. Оценщик валютных рисков при операциях (FX Risk Exposure Core)
+Вход: contract_value_foreign_currency (double, >0.0), current_fx_rate (double, >0.0001), forecasted_volatility_percentage (double, [0.1, 200.0]), hedging_cost_percentage (double, [0.0, 50.0])
+Формулы:
+	contract_value_local_currency = contract_value_foreign_currency current_fx_rate
+	maximum_value_at_risk = contract_value_local_currency (forecasted_volatility_percentage / 100.0)
+	net_value_with_hedging = contract_value_local_currency - (contract_value_local_currency (hedging_cost_percentage / 100.0))
+Пример: Вход: контракт 10,000$, курс 90.0, волатильность 10%, стоимость хеджа 2% -> Выход: local_val = 900000.0, var = 90000.0, net_with_hedging = 882000.0
+
+ГРУППА 5. УПРАВЛЕНИЕ ПЕРСОНАЛОМ И ПРОДУКТИВНОСТЬ
+
+Вариант 21. Сервис расчета стоимости замещения кадров (HR Turnover Cost Core)
+Вход: average_salary (double, >=500.0), recruiter_hourly_rate (double, >0.0), hours_spent_recruiting (double, [1.0, 500.0]), onboarding_duration_days (int, [1, 180]), productivity_loss_coefficient (double, [0.05, 1.0])
+Формулы:
+	direct_hiring_cost = hours_spent_recruiting recruiter_hourly_rate
+	hidden_productivity_loss_cost = onboarding_duration_days (average_salary / 21.5) productivity_loss_coefficient
+	total_replacement_cost = direct_hiring_cost + hidden_productivity_loss_cost
+Пример: Вход: зарплата 60000.0, ставка рекрутера 50.0, часов 40, адаптация 30 дней, потеря эффективности 0.3 -> Выход: direct = 2000.0, hidden = 2511.63, total = 4511.63
+
+Вариант 22. Модуль грейдинга и оптимизации бонусных фондов (Merit Matrix & Bonus Allocator)
+Вход: base_salary (double, >0.0), performance_score (int, строго дискретно [1, 5]), company_target_achievement (double, >=0.0), max_bonus_percentage (double, [5.0, 300.0])
+Формулы:
+	performance_multiplier = (performance_score - 1) 0.25
+	calculated_bonus_amount = base_salary (max_bonus_percentage / 100.0) performance_multiplier (company_target_achievement / 100.0)
+	new_recommended_salary = base_salary (1.0 + (performance_score >= 4 ? 0.1 : 0.02))
+Пример: Вход: оклад 100,000, оценка 4, выполнение плана компании 110%, макс. бонус 50% -> Выход: multiplier = 0.75, calculated_bonus_amount = 41250.0, new_salary = 110000.0
+
+Вариант 23. Вычислитель эффективности использования времени (Labor Productivity Indexer)
+Вход: total_hours_paid (double, >0.0), logged_project_hours (double, [0.0, total_hours_paid]), total_revenue_generated (double, >=0.0), overtime_hours_paid (double, [0.0, total_hours_paid 0.5])
+Формулы:
+	utilization_rate = logged_project_hours / total_hours_paid
+	revenue_per_productive_hour = (logged_project_hours > 0) ? (total_revenue_generated / logged_project_hours) : 0.0
+	overtime_cost_impact = (overtime_hours_paid 1.5) / total_hours_paid
+Пример: Вход: оплачено 160 часов, списано на проекты 120, выручка 240,000, сверхурочные 10 -> Выход: utilization = 0.75, revenue_per_hour = 2000.0, overtime_impact = 0.0937
+
+Вариант 24. Оптимизатор штатного расписания сервисных служб (Staffing Level Optimizer)
+Вход: avg_incoming_tickets_per_hour (double, [0.1, 10000.0]), avg_ticket_handling_time_mins (double, >0.0, строго < max_queue 10), max_allowable_queue_time_mins (double, [0.5, 120.0]), hourly_operator_cost (double, >0.0)
+Формулы:
+	required_workload_hours = (avg_incoming_tickets_per_hour avg_ticket_handling_time_mins) / 60.0
+	min_required_operators = (int)ceil(required_workload_hours (1.0 + (5.0 / max_allowable_queue_time_mins)))
+	hourly_support_cost = min_required_operators hourly_operator_cost
+Пример: Вход: 40 тикетов в час, 15 мин обработка, макс. ожидание 10 мин, стоимость оператора 25.0 -> Выход: workload = 10.0ч, min_operators = 15, hourly_cost = 375.0
+
+Вариант 25. Анализатор аутсорсинга против инхаус-разработки (Make-or-Buy Software Evaluator)
+Вход: estimated_development_hours (double, [10.0, 10000.0]), internal_developer_hourly_rate (double, >0.0), internal_management_overhead_percentage (double, [0.0, 150.0]), agency_fixed_quote (double, >0.0), annual_maintenance_by_agency (double, >=0.0)
+Формулы:
+	total_inhouse_cost = estimated_development_hours internal_developer_hourly_rate (1.0 + internal_management_overhead_percentage / 100.0)
+	total_agency_cost_year1 = agency_fixed_quote + annual_maintenance_by_agency
+	financial_advantage_holder = (total_inhouse_cost < total_agency_cost_year1) ? 1 : 2
+Пример: Вход: 500 часов, ставка 40.0, накладные расходы 20%, квота студии 22,000, поддержка 2,000 -> Выход: total_inhouse = 24000.0, total_agency = 24000.0, advantage = 2 (при равенстве выбираем аутсорс для снижения внутренних рисков)
+
+ГРУППА 6. ПРОИЗВОДСТВО, IT И ЭНЕРГОЭФФЕКТИВНОСТЬ
+
+Вариант 26. Оптимизатор затрат на облачную инфраструктуру (Cloud FinOps Optimizer)
+Вход: allocated_cpu_cores (int, [1, 256], строго степень двойки или четное), utilized_cpu_percentage (double, [0.0, 100.0]), hourly_cost_per_core (double, >0.0), idle_threshold_percentage (double, [1.0, 50.0])
+Формулы:
+	total_monthly_spend = allocated_cpu_cores hourly_cost_per_core 720.0
+	wasted_spend_monthly = (utilized_cpu_percentage < idle_threshold_percentage) ? (total_monthly_spend (1.0 - utilized_cpu_percentage / 100.0)) : 0.0
+	recommended_cores_count = (utilized_cpu_percentage < idle_threshold_percentage) ? (int)max(1.0, ceil(allocated_cpu_cores (utilized_cpu_percentage / idle_threshold_percentage))) : allocated_cpu_cores
+Пример: Вход: 16 ядер, загрузка 5%, стоимость ядра 0.1, порог простоя 20% -> Выход: monthly_spend = 1152.0, wasted = 1094.4, recommended_cores = 4
+
+Вариант 27. Анализатор эффективности промышленного оборудования (OEE Industrial Core)
+Вход: total_shift_time_mins (int, >0), planned_downtime_mins (int, [0, total_shift_time_mins-1]), actual_units_produced (int, >=0), ideal_cycle_time_per_unit_secs (double, >0.001), defective_units_produced (int, [0, actual_units_produced])
+Формулы:
+	availability_rate = (double)(total_shift_time_mins - planned_downtime_mins) / total_shift_time_mins
+	run_time_secs = (total_shift_time_mins - planned_downtime_mins) 60.0
+	performance_rate = (actual_units_produced ideal_cycle_time_per_unit_secs) / run_time_secs
+	quality_rate = (actual_units_produced > 0) ? ((double)(actual_units_produced - defective_units_produced) / actual_units_produced) : 1.0
+	oee_percentage = availability_rate performance_rate quality_rate 100.0
+Пример: Вход: смена 480 мин, простой 60 мин, выпущено 1000 шт, норма 20 сек/шт, брак 20 шт -> Выход: availability = 0.875, performance = 0.7936, quality = 0.98, oee = 68.04%
+
+Вариант 28. Калькулятор экологических сборов предприятия (Carbon Tax & Green Core)
+Вход: electricity_kwh_consumed (double, >=0.0), natural_gas_cubic_meters (double, >=0.0, сумма ресурсов > 0), grid_carbon_intensity (double, [0.01, 2.0]), tax_rate_per_ton_co2 (double, >=0.0)
+Формулы:
+	total_co2_emissions_tons = (electricity_kwh_consumed grid_carbon_intensity + natural_gas_cubic_meters 1.9) / 1000.0
+	calculated_environmental_tax = total_co2_emissions_tons tax_rate_per_ton_co2
+	green_efficiency_rating = (total_co2_emissions_tons < 5.0) ? 1 : (total_co2_emissions_tons < 20.0 ? 2 : 3)
+Пример: Вход: 10000 кВтч, 2000 куб.м газа, интенсивность сети 0.5, ставка налога 30.0 -> Выход: emissions = 8.8 тонн, tax = 264.0, rating = 2
+
+Вариант 29. Модуль расчета амортизации основных средств (Asset Depreciation Engine)
+Вход: initial_asset_cost (double, >0.0), salvage_value (double, [0.0, initial_asset_cost 0.9]), useful_life_years (int, [1, 50]), current_year_of_service (int, [1, useful_life_years])
+Формулы:
+	annual_depreciation_linear = (initial_asset_cost - salvage_value) / useful_life_years
+	accumulated_depreciation = annual_depreciation_linear current_year_of_service
+	book_value = initial_asset_cost - accumulated_depreciation
+Пример: Вход: стоимость 50,000, ликвидационная 5,000, срок 10 лет, текущий год 3 -> Выход: annual = 4500.0, accumulated = 13500.0, book_value = 36500.0
+
+Вариант 30. Вычислитель стоимости владения базой данных (Database Storage TCO Architect)
+Вход: initial_data_size_gb (double, >0.0), monthly_growth_rate_gb (double, >=0.0), storage_cost_per_gb_month (double, >0.0), backup_retention_days (int, [1, 3650]), target_horizon_months (int, [1, 120])
+Формулы:
+	final_data_size_gb = initial_data_size_gb + (monthly_growth_rate_gb target_horizon_months)
+	cumulative_storage_cost = target_horizon_months (initial_data_size_gb + (monthly_growth_rate_gb target_horizon_months / 2.0)) storage_cost_per_gb_month
+	estimated_backup_cost = cumulative_storage_cost (backup_retention_days / 30.0) 0.4
+Пример: Вход: начальный объем 100 Гб, рост 10 Гб/мес, тариф 0.05, хранение бэкапов 30 дней, горизонт 12 мес -> Выход: final_size = 220 Гб, storage_cost = 96.0, backup_cost = 38.4
+
+ГРУППА 7. НОВЫЕ ТЕХНОЛОГИЧЕСКИЕ И БИЗНЕС-МОДЕЛИ
+
+Вариант 31. Модуль оценки стоимости инференса больших языковых моделей (LLM Inference Cost Engine)
+Вход: avg_requests_per_day (int, [1, 100000000]), input_tokens_per_request (double, >=4.0), output_tokens_per_request (double, >=4.0), price_per_million_input_tokens (double, >0.0), price_per_million_output_tokens (double, >= price_per_million_input_tokens 1.2)
+Формулы:
+	daily_token_volume = avg_requests_per_day (input_tokens_per_request + output_tokens_per_request)
+	average_request_cost = (input_tokens_per_request (price_per_million_input_tokens / 1000000.0)) + (output_tokens_per_request (price_per_million_output_tokens / 1000000.0))
+	projected_monthly_ai_spend = avg_requests_per_day average_request_cost 30.0
+Пример: Вход: 10,000 запросов, 500 входных токенов, 200 выходных, тариф входных 2.0, тариф выходных 6.0 -> Выход: daily_tokens = 7,000,000, avg_req_cost = 0.0022, monthly_spend = 660.0
+
+Вариант 32. Анализатор юнит-экономики сервисов совместного потребления (Ride-Sharing & Rental Core)
+Вход: asset_purchase_cost (double, >0.0), average_trips_per_day (double, >0.0), average_trip_duration_mins (double, >0.0, trips*duration <= 1440.0), per_minute_rental_tariff (double, >=0.01), daily_maintenance_and_charging_cost (double, >0.0)
+Формулы:
+	daily_gross_revenue = average_trips_per_day average_trip_duration_mins per_minute_rental_tariff
+	net_daily_profit = daily_gross_revenue - daily_maintenance_and_charging_cost
+	asset_payback_days = (net_daily_profit > 0) ? (asset_purchase_cost / net_daily_profit) : -1.0
+Пример: Вход: стоимость самоката 500.0, 5 поездок в день, по 15 мин, тариф 0.2/мин, обслуживание в день 5.0 -> Выход: gross = 15.0, net = 10.0, payback = 50 дней
+
+Вариант 33. Вычислительный модуль пропускной способности и окупаемости CDN (CDN Bandwidth Pricing Core)
+Вход: monthly_active_viewers (int, >=1), avg_streaming_hours_per_viewer (double, [0.01, 744.0]), video_bitrate_kbps (double, [300.0, 50000.0]), cdn_price_per_terabyte (double, >0.0)
+Формулы:
+	total_monthly_traffic_tb = (monthly_active_viewers avg_streaming_hours_per_viewer 3600.0 (video_bitrate_kbps / 8.0)) / 1000000000.0
+	total_cdn_invoice = total_monthly_traffic_tb cdn_price_per_terabyte
+	infrastructure_cost_per_user = total_cdn_invoice / monthly_active_viewers
+Пример: Вход: 10,000 зрителей, 10 часов в месяц, битрейт 4000 кбит/с, цена за Тб 5.0 -> Выход: traffic = 18.0 Тб, cdn_invoice = 90.0, cost_per_user = 0.009
+
+Вариант 34. Калькулятор стоимости хранения зашифрованных медицинских данных (Secure Health-Data TCO Engine)
+Вход: annual_patient_flow (int, >=1), avg_raw_data_per_patient_mb (double, >0.0), encryption_overhead_percentage (double, [1.0, 50.0]), cloud_storage_cost_per_gb_year (double, >0.0)
+Формулы:
+	total_raw_data_annual_gb = (annual_patient_flow avg_raw_data_per_patient_mb) / 1024.0
+	total_encrypted_data_annual_gb = total_raw_data_annual_gb (1.0 + encryption_overhead_percentage / 100.0)
+	five_year_cumulative_storage_cost = total_encrypted_data_annual_gb cloud_storage_cost_per_gb_year 15.0 (учитывая линейное накопление за 5 лет: 1+2+3+4+5=15 лет объема)
+Пример: Вход: 5,000 пациентов, 200 Мб на человека, оверхед шифрования 10%, тариф за Гб 0.2 -> Выход: raw = 976.56 Гб, encrypted = 1074.22 Гб, 5_year_cost = 3222.66
+
+Вариант 35. Алгоритм расчета упущенной выгоды от ложных срабатываний антифрод-систем (Anti-Fraud False Positive Quantifier)
+Вход: total_processed_transactions_monthly (int, >=1), average_transaction_value (double, >0.0), false_positive_rate_percentage (double, [0.0, 5.0]), customer_insult_churn_rate (double, [0.0, 100.0]), clv_per_customer (double, > average_transaction_value)
+Формулы:
+	blocked_legitimate_transactions = total_processed_transactions_monthly (false_positive_rate_percentage / 100.0)
+	direct_revenue_lost_monthly = blocked_legitimate_transactions average_transaction_value 0.025 (упущенная эквайринговая комиссия 2.5%)
+	reputational_churn_financial_damage = blocked_legitimate_transactions (customer_insult_churn_rate / 100.0) clv_per_customer
+Пример: Вход: 100,000 транзакций, средний чек 50.0, ложные срабатывания 0.1%, отток обиженных 20%, LTV 500.0 -> Выход: blocked = 100, direct_lost = 125.0, reputational_damage = 10000.0
+
+Вариант 36. Модуль планирования бюджетов на Bug Bounty программы (Cybersecurity Bug Bounty Allocator)
+Вход: payout_critical_severity (double, >=500.0), predicted_vulnerabilities_annual (int, >=1), distribution_percentage_critical (double, (0.0, 25.0]), triage_cost_per_report (double, >=0.0)
+Формулы:
+	payout_low_severity_calculated = payout_critical_severity 0.05
+	total_payout_fund_annual = predicted_vulnerabilities_annual ( (distribution_percentage_critical/100.0)*payout_critical_severity + (1.0 - distribution_percentage_critical/100.0)*payout_low_severity_calculated )
+	total_program_tco = total_payout_fund_annual + (predicted_vulnerabilities_annual triage_cost_per_report)
+Пример: Вход: выплата за критическую 2000.0, 100 отчетов в год, доля критических 10%, валидация отчета 50.0 -> Выход: low_payout = 100.0, total_payout = 29000.0, tco = 34000.0
+
+Вариант 37. Калькулятор эффективности систем автоматизации складов роботами (AGV Warehouse Fleet Optimizer)
+Вход: human_operator_monthly_salary (double, >0.0), human_fleet_size (int, >=1), agv_robot_purchase_cost (double, >0.0), agv_robot_monthly_maintenance (double, < human_operator_monthly_salary), productivity_ratio_agv_to_human (double, [0.2, 5.0])
+Формулы:
+	required_agv_fleet_size = (int)ceil(human_fleet_size / productivity_ratio_agv_to_human)
+	monthly_operational_savings = (human_fleet_size human_operator_monthly_salary) - (required_agv_fleet_size agv_robot_monthly_maintenance)
+	robotization_roi_months = (monthly_operational_savings > 0) ? ((required_agv_fleet_size agv_robot_purchase_cost) / monthly_operational_savings) : -1.0
+Пример: Вход: зарплата 3000.0, 10 водителей, покупка робота 15000.0, обслуживание робота 500.0, эффективность робота 1.2 -> Выход: required_robots = 9, monthly_savings = 25500.0, roi_months = 5.29
+
+Вариант 38. Оценщик затрат на миграцию монолитной архитектуры на микросервисы (Microservices Migration Estimator)
+Вход: total_monolith_loc (int, >=5000), target_microservices_count (int, [2, total_monolith_loc / 500]), dev_team_hourly_rate (double, >0.0), coupling_coefficient (double, [1.0, 3.0])
+Формулы:
+	estimated_migration_man_hours = (total_monolith_loc / 100.0) coupling_coefficient (1.0 + target_microservices_count 0.05)
+	total_migration_financial_cost = estimated_migration_man_hours dev_team_hourly_rate
+	architectural_risk_index = coupling_coefficient (double)target_microservices_count
+Пример: Вход: 50,000 строк кода, 5 микросервисов, ставка инженера 60.0, зацепление кода 2.0 -> Выход: man_hours = 1250.0, financial_cost = 75000.0, risk_index = 10.0
+
+Вариант 39. Сервис расчета окупаемости коммерческих солнечных станций для ЦОД (Data Center Solar ROI Engine)
+Вход: datacenter_monthly_power_consumption_kwh (double, >0.0), grid_electricity_tariff_per_kwh (double, >0.0), solar_array_installation_cost (double, >0.0), average_sunny_hours_year (double, [400.0, 4500.0]), solar_power_generation_capacity_kw (double, >0.0, месячная генерация <= потребление ЦОД)
+Формулы:
+	annual_solar_generation_kwh = solar_power_generation_capacity_kw average_sunny_hours_year
+	grid_dependency_reduction_percentage = (annual_solar_generation_kwh / (datacenter_monthly_power_consumption_kwh 12.0)) 100.0
+	years_to_full_investment_payback = solar_array_installation_cost / (annual_solar_generation_kwh grid_electricity_tariff_per_kwh)
+Пример: Вход: потребление ЦОД 100,000 кВтч/мес, тариф сети 0.1, установка панелей 80,000, солнечных часов 1500, мощность панелей 200 кВт -> Выход: annual_gen = 300,000 кВтч, reduction = 25.0%, payback = 2.67 лет
+
+Вариант 40. Калькулятор бюджета на локализацию и адаптацию ПО (Software Localization Budget Core)
+Вход: total_words_in_application (int, [50, 10000000]), target_languages_count (int, [1, 150]), translation_cost_per_word (double, >0.001), qa_testing_hours_per_language (double, >=0.0), qa_engineer_hourly_rate (double, >0.0)
+Формулы:
+	pure_translation_cost = total_words_in_application target_languages_count translation_cost_per_word
+	linguistic_qa_cost = target_languages_count qa_testing_hours_per_language qa_engineer_hourly_rate
+	total_market_entry_localization_budget = pure_translation_cost + linguistic_qa_cost
+Пример: Вход: 20,000 слов, 3 новых языка, перевод 0.1/слово, тестирование 10 часов на язык, ставка инженера 30.0 -> Выход: translation = 6000.0, qa = 900.0, total_budget = 6900.0
