@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Защищенная зона API</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css">
+    <script>
+        function copyText(btn, id) {
+            navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => {
+                const old = btn.innerText;
+                btn.innerText = "Готово!";
+                setTimeout(() => {
+                    btn.innerText = old;
+                }, 1200);
+            });
+        }
+    </script>
+</head>
+
+<body>
+
+    <h2>Защищенные эндпоинты (требуется токен авторизации)</h2>
+    <p>Для вызова требуется заголовок <code>Authorization: Bearer TKXXXXX</code></p>
+
+    <!-- ================= ГРУППА 1: WORKS ================= -->
+    <details open>
+        <summary>Основная обработка и анализ</summary>
+        <div>
+
+            <!-- Выполнение задачи -->
+            <div class="endpoint-card">
+                <div class="method-path">POST /api/v1.1/works/calc</div>
+                <p>Основная обработка</p>
+                <div class="curl-box">
+                    <div class="curl-text" id="c-calc">curl -X POST "http://localhost:8080/api/v1.1/works/calc" -H "Authorization: Bearer TK12345" -H "Content-Type: application/json" -d "{\"data\": [10.5, \"строка\", 20.0, null, 45.3]}"</div>
+                    <button class="copy-btn" onclick="copyText(this, 'c-calc')">Скопировать</button>
+                </div>
+                <details>
+                    <summary>Ответ, ошибка</summary>
+                    <pre>{
+  "message": "Ошибка валидации: элемент не является числом",
+  "response_time": "2026-10-09 12:33:05",
+  "input": {
+    "data": [10.5, "строка", 20.0, null, 45.3]
+  },
+  "data": {}
+}</pre>
+                </details>
+                <details>
+                    <summary>Ответ, успех</summary>
+                    <pre>{
+  "message": "успешно выполнено",
+  "response_time": "2026-10-09 12:33:02",
+  "input": {
+    "data": [10.5, 20.0, 45.3]
+  },
+  "data": {
+    "count": 3,
+    "mean": 25.26,
+    "median": 20.00,
+    "mode": "None",
+    "variance": 213.94,
+    "std_deviation": 14.62
+  }
+}</pre>
+                </details>
+            </div>
+
+            <!-- История расчетов -->
+            <div class="endpoint-card">
+                <div class="method-path">GET /api/v1.1/works/history</div>
+                <p>Журнал вычислений</p>
+                <div class="curl-box">
+                    <div class="curl-text" id="c-uhist">curl -X GET "http://localhost:8080/api/v1.1/works/history?limit=4&offset=0&date_from=2026-10-01" -H "Authorization: Bearer TK12345"</div>
+                    <button class="copy-btn" onclick="copyText(this, 'c-uhist')">Скопировать</button>
+                </div>
+                <details>
+                    <summary>Ответ</summary>
+                    <pre>{
+  "limit": 4,
+  "offset": 0,
+  "date_from": "2026-10-01",
+  "total_records": 160,
+  "response_time": "2026-10-09 12:25:00",
+  "data": [
+    {
+      "username": "user1",
+      "datetime": "2026-10-09 10:01:05",
+      "input": { "data": [10.0, 20.0, 20.0, 30.0] },
+      "result": { 
+        "message": "успешно выполнено",
+        "count": 4,
+        "mean": 20.00, 
+        "median": 20.00,
+        "mode": [20.00],
+        "variance": 50.00,
+        "std_deviation": 7.07
+      }
+    },
+    {
+      "username": "user2",
+      "datetime": "2026-10-09 10:02:14",
+      "input": { "data": [10.0, "строка", 30.0] },
+      "result": { "message": "Ошибка парсинга: не удалось преобразовать элемент 'строка' в вещественное число." }
+    },
+    {
+      "username": "admin1",
+      "datetime": "2026-10-09 10:03:40",
+      "input": { "data": [15.0, -5.0, 250.0, 15.0] },
+      "result": { 
+        "message": "успешно выполнено",
+        "count": 4,
+        "mean": 68.75, 
+        "median": 15.00,
+        "mode": [15.00],
+        "variance": 11004.68,
+        "std_deviation": 104.90
+      }
+    },
+    {
+      "username": "user1",
+      "datetime": "2026-10-09 10:04:11",
+      "input": { "data": [10.0, 1200.0, -5.0] },
+      "result": { "message": "Ошибка валидации: значение 1200 выходит за рамки разрешенного диапазона [-1000, 1000]." }
+    }
+  ]
+}</pre>
+                </details>
+            </div>
+
+        </div>
+    </details>
+    <!-- ================= ГРУППА 2: AUTH ================= -->
+    <details>
+        <summary>Сессии и профили</summary>
+        <div>
+
+            <!-- Профиль -->
+            <div class="endpoint-card">
+                <div class="method-path">GET /api/v1.1/auth/profile</div>
+                <p>Статус сессии, роль и остаток TTL</p>
+                <div class="curl-box">
+                    <div class="curl-text" id="c-prof">curl -X GET "http://localhost:8080/api/v1.1/auth/profile" -H "Authorization: Bearer TK12345"</div>
+                    <button class="copy-btn" onclick="copyText(this, 'c-prof')">Скопировать</button>
+                </div>
+                <details>
+                    <summary>Ответ</summary>
+                    <pre>{
+  "data": { "username": "user1", "role": "admin", "expires_at": "2026-10-09 12:18:45" },
+  "response_time": "2026-10-09 12:15:40"
+}</pre>
+                </details>
+            </div>
+
+            <!-- Продление токена -->
+            <div class="endpoint-card">
+                <div class="method-path">POST /api/v1.1/auth/refresh</div>
+                <p>Продление токена доступа</p>
+                <div class="curl-box">
+                    <div class="curl-text" id="c-ref">curl -X POST "http://localhost:8080/api/v1.1/auth/refresh" -H "Authorization: Bearer TK12345"</div>
+                    <button class="copy-btn" onclick="copyText(this, 'c-ref')">Скопировать</button>
+                </div>
+                <details>
+                    <summary>Ответ</summary>
+                    <pre>{
+  "data": {
+    "username": "user1",
+    "role": "admin",
+    "expires_at": "2026-10-09 12:18:45"
+  },
+  "response_time": "2026-10-09 12:15:40"
+}</pre>
+                </details>
+            </div>
+
+            <!-- Список пользователей -->
+            <div class="endpoint-card">
+                <div class="method-path">GET /api/v1.1/auth/users</div>
+                <p>Просмотр учетных записей, доступно только для admin и owner.</p>
+                <div class="curl-box">
+                    <div class="curl-text" id="c-list">curl -X GET "http://localhost:8080/api/v1.1/auth/users" -H "Authorization: Bearer TK12345"</div>
+                    <button class="copy-btn" onclick="copyText(this, 'c-list')">Скопировать</button>
+                </div>
+                <details>
+                    <summary>Ответ</summary>
+                    <pre>{
+  "data": [
+    {"username": "admin1", "role": "admin"},
+    {"username": "user1", "role": "user"}
+  ],
+  "response_time": "2026-10-09 12:16:00"
+}</pre>
+                </details>
+            </div>
+
+            <!-- Изменение пароля -->
+            <div class="endpoint-card">
+                <div class="method-path">PUT /api/v1.1/auth/users/password</div>
+                <p>Смена пароля</p>
+                <div class="curl-box">
+                    <div class="curl-text" id="c-pass">curl -X PUT "http://localhost:8080/api/v1.1/auth/users/password" -H "Authorization: Bearer TK12345" -H "Content-Type: application/x-www-form-urlencoded" -d "username=user1&new_password=newSecure777"</div>
+                    <button class="copy-btn" onclick="copyText(this, 'c-pass')">Скопировать</button>
+                </div>
+                <details>
+                    <summary>Ответ</summary>
+                    <pre>{
+  "success": true,
+  "data": { "message": "Пароль изменен" },
+  "response_time": "2026-10-09 12:16:05"
+}</pre>
+                </details>
+            </div>
+
+            <!-- Удаление аккаунта -->
+            <div class="endpoint-card">
+                <div class="method-path">DELETE /api/v1.1/auth/users</div>
+                <p>Удаление учетной записи</p>
+                <div class="curl-box">
+                    <div class="curl-text" id="c-del">curl -X DELETE "http://localhost:8080/api/v1.1/auth/users" -H "Authorization: Bearer TK12345" -H "Content-Type: application/x-www-form-urlencoded" -d "username=user2"</div>
+                    <button class="copy-btn" onclick="copyText(this, 'c-del')">Скопировать</button>
+                </div>
+                <details>
+                    <summary>Ответ</summary>
+                    <pre>{
+  "success": true,
+  "data": { "message": "Учетная запись удалена" },
+  "response_time": "2026-10-09 12:16:10"
+}</pre>
+                </details>
+            </div>
+
+        </div>
+    </details>
+    <!-- ================= ГРУППА 3: ADMIN ================= -->
+    <details>
+        <summary>Администрирование</summary>
+        <div>
+
+            <!-- Логи сервера -->
+            <div class="endpoint-card">
+                <div class="method-path">GET /api/v1.1/admin/stats</div>
+                <p>Чтение системного текстового лога действий сервера (доступно ролям admin и owner).</p>
+                <div class="curl-box">
+                    <div class="curl-text" id="c-stat">curl -X GET "http://localhost:8080/api/v1.1/admin/stats?limit=1" -H "Authorization: Bearer TK12345"</div>
+                    <button class="copy-btn" onclick="copyText(this, 'c-stat')">Скопировать</button>
+                </div>
+                <details>
+                    <summary>Ответ</summary>
+                    <pre>{
+  "limit": 1,
+  "offset": 0,
+  "total_records": 45,
+  "response_time": "2026-10-09 13:00:30",
+  "data": [
+    "[2026-10-09 12:00:01] Конфигурация .env успешно загружена"
+  ]
+}</pre>
+                </details>
+            </div>
+
+            <!-- Автотесты -->
+            <div class="endpoint-card">
+                <div class="method-path">GET /api/v1.1/admin/run-tests</div>
+                <p>Запуск движка автотестирования для проверки стабильности математических модулей.</p>
+                <div class="curl-box">
+                    <div class="curl-text" id="c-test">curl -X GET "http://localhost:8080/api/v1.1/admin/run-tests" -H "Authorization: Bearer TK12345"</div>
+                    <button class="copy-btn" onclick="copyText(this, 'c-test')">Скопировать</button>
+                </div>
+                <details>
+                    <summary>Ответ</summary>
+                    <pre>==================================================
+         ОТЧЕТ АВТОМАТИЧЕСКОГО ТЕСТИРОВАНИЯ       
+==================================================
+Тест1: [Валидный тест: Простые числа]
+....
+
+ИТОГ: Успешно пройдено 23 из 25 тестов
+</pre>
+                </details>
+            </div>
+
+        </div>
+    </details>

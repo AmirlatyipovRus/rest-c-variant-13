@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Описание проекта</title>
+    <!-- Двойное подключение для локального просмотра и работы через сервер -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css">
+    <script>
+        function copyText(btn, id) {
+            navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => {
+                const old = btn.innerText; btn.innerText = "Готово!";
+                setTimeout(() => { btn.innerText = old; }, 1200);
+            });
+        }
+    </script>
+</head>
+<body>
+
+    <h2>Расчет статистических характеристик числовой последовательности</h2>
+    <p>Программа обрабатывает массив вещественных чисел и вычисляет среднее арифметическое, медиану, моду, генеральную дисперсию и среднеквадратичное отклонение.</p>
+
+    <p>Требования к блоку обеспечения стабильности работы системы:<br>
+        <b>1. Объем выборки:</b> от 2 до 100 чисел<br>
+        <b>2. Диапазон:</b> каждое число от -1000 до 1000 (защита от аномалий и переполнения)<br>
+        <b>3. Валидация:</b> ошибка при посторонних символах, разделителях или пустых элементах (null)
+    </p>
+
+    <h3>Матрица прав доступа RBAC</h3>
+    Роли: гость, пользователь, администратор, владелец
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Действия</th>
+                    <th>guest</th>
+                    <th>user</th>
+                    <th>admin</th>
+                    <th>owner</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Выполнение основной задачи</td>
+                    <td>Нет</td>
+                    <td>Да</td>
+                    <td>Да</td>
+                    <td>Нет</td>
+                </tr>
+                <tr>
+                    <td>Просмотр личной истории расчетов</td>
+                    <td>Нет</td>
+                    <td>Да</td>
+                    <td>Да</td>
+                    <td>Нет</td>
+                </tr>
+                <tr>
+                    <td>Просмотр истории расчетов группы</td>
+                    <td>Нет</td>
+                    <td>Нет</td>
+                    <td>Да</td>
+                    <td>Да</td>
+                </tr>
+                <tr>
+                    <td>Просмотр системного журнала</td>
+                    <td>Нет</td>
+                    <td>Нет</td>
+                    <td>Да</td>
+                    <td>Да</td>
+                </tr>
+                <tr>
+                    <td>Запуск автоматических тестов ядра</td>
+                    <td>Нет</td>
+                    <td>Нет</td>
+                    <td>Да</td>
+                    <td>Да</td>
+                </tr>
+                <tr>
+                    <td>Управление аккаунтами</td>
+                    <td>Нет</td>
+                    <td>Своим</td>
+                    <td>Своим, users</td>
+                    <td>Да</td>
+                </tr>
+                <tr>
+                    <td>Просмотр счетчиков и топ-10</td>
+                    <td>Да</td>
+                    <td>Да</td>
+                    <td>Да</td>
+                    <td>Да</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Параметры</h3>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 85px;">Параметр</th>
+                    <th>Назначение</th>
+                    <th>По умолчанию</th>
+                    <th>Обязательный</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>Authorization</code></td>
+                    <td>Токен сессии (Header: <code>Bearer TKXXXXX</code>)</td>
+                    <td>Нет</td>
+                    <td>Да *</td>
+                </tr>
+                <tr>
+                    <td><code>data</code></td>
+                    <td>Входной JSON-массив чисел для выполнения вычислений в теле запроса</td>
+                    <td>Нет</td>
+                    <td>Да</td>
+                </tr>
+                <tr>
+                    <td><code>date_from</code></td>
+                    <td>Начальная дата фильтрации логов и истории (формат <code>YYYY-MM-DD</code>)</td>
+                    <td>Не ограничена</td>
+                    <td>Нет</td>
+                </tr>
+                <tr>
+                    <td><code>date_to</code></td>
+                    <td>Конечная дата фильтрации логов и истории (формат <code>YYYY-MM-DD</code>)</td>
+                    <td>Не ограничена</td>
+                    <td>Нет</td>
+                </tr>
+                <tr>
+                    <td><code>limit</code></td>
+                    <td>Количество возвращаемых записей в одном ответе пагинации</td>
+                    <td>20</td>
+                    <td>Нет</td>
+                </tr>
+                <tr>
+                    <td><code>offset</code></td>
+                    <td>Смещение выборки для постраничного вывода (пропуск строк)</td>
+                    <td>0</td>
+                    <td>Нет</td>
+                </tr>
+                <tr>
+                    <td><code>target_group</code></td>
+                    <td>Фильтрация истории по роли пользователей (массив строк, например <code>["user"]</code>)</td>
+                    <td>[]</td>
+                    <td>Нет</td>
+                </tr>
+                <tr>
+                    <td><code>username</code></td>
+                    <td>Идентификатор аккаунта для CRUD / логина</td>
+                    <td>Нет</td>
+                    <td>Да</td>
+                </tr>
+                <tr>
+                    <td><code>password</code></td>
+                    <td>Пароль для аутентификации или создания записи</td>
+                    <td>Нет</td>
+                    <td>Да</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Открытые эндпойнты, без токена доступа</h3>
+
+    <!-- Эндпоинт 1 -->
+    <div class="endpoint-card">
+        <div class="method-path">GET /api/v1.1/guest/counters</div>
+        <p>Показатели системы: количество аккаунтов, успешных расчеток и ошибок</p>
+        <div class="curl-box">
+            <div class="curl-text" id="c-count">curl -X GET "http://localhost:8080/api/v1.1/guest/counters"</div>
+            <button class="copy-btn" onclick="copyText(this, 'c-count')">Скопировать</button>
+        </div>
+        <details>
+            <summary>Пример ответа</summary>
+            <pre>{
+  "data": {
+    "total_users": 4,
+    "total_successful_calculations": 142,
+    "total_failed_validations": 18
+  },
+  "response_time": "2026-10-09 12:53:15"
+}</pre>
+        </details>
+    </div>
+
+    <!-- Эндпоинт 2 -->
+    <div class="endpoint-card">
+        <div class="method-path">GET /api/v1.1/guest/history</div>
+        <p>Журнал работы системы</p>
+        <div class="curl-box">
+            <div class="curl-text" id="c-hist">curl -X GET "http://localhost:8080/api/v1.1/guest/history?limit=2&offset=27&date_from=2026-10-01&date_to=2026-10-09"</div>
+            <button class="copy-btn" onclick="copyText(this, 'c-hist')">Скопировать</button>
+        </div>
+        <details>
+            <summary>Пример ответа</summary>
+            <pre>{
+  "limit": 2,
+  "offset": 27,
+  "date_from": "2026-10-01",
+  "date_to": "2026-10-09",
+  "total_records": 160,
+  "response_time": "2026-10-09 12:53:22",
+  "data": [
+    {
+      "username": "user1",
+      "datetime": "2026-10-09 10:01:05",
+      "input": { "data": [10.5, 20.0, 45.3] },
+      "result": {
+        "count": 3,
+        "mean": 25.26,
+        "median": 20.00,
+        "mode": "None",
+        "variance": 213.94,
+        "std_deviation": 14.62
+    },
+    {
+      "username": "user2",
+      "datetime": "2026-10-09 10:02:14",
+      "input": { 
+        "data": [10.0, "строка", 30.0] 
+      },
+      "result": { "message": "Ошибка: не удалось преобразовать элемент в вещественное число" }
+    }
+  ]
+}</pre>
+        </details>
+    </div>
+
+
+    <div class="endpoint-card">
+        <div class="method-path">POST /api/v1.1/auth/register</div>
+        <p>Регистрация в системе</p>
+        <div class="curl-box">
+            <div class="curl-text" id="c-reg">curl -X POST "http://localhost:8080/api/v1.1/auth/register" -H "Content-Type: application/json" -d "{\"username\": \"newuser\", \"password\": \"securepass789\"}"</div>
+            <button class="copy-btn" onclick="copyText(this, 'c-reg')">Скопировать</button>
+        </div>
+        <details>
+            <summary>Пример ответа при успешной регистрации</summary>
+            <pre>{
+  "success": true,
+  "data": {
+    "message": "Пользователь newuser успешно зарегистрирован.",
+    "role": "user"
+  },
+  "response_time": "2026-10-09 13:28:00"
+}</pre>
+        </details>
+        <details>
+            <summary>Пример ответа, если имя уже занято</summary>
+            <pre>{
+  "success": false,
+  "data": {
+    "message": "Ошибка регистрации: имя пользователя 'newuser' уже занято в системе."
+  },
+  "response_time": "2026-10-09 13:28:03"
+}</pre>
+        </details>
+    </div>
+
+
+    <div class="endpoint-card">
+        <div class="method-path">POST /api/v1.1/auth/login</div>
+        <p>Вход в систему (аутентификация)</p>
+        <div class="curl-box">
+            <div class="curl-text" id="c-log">curl -X POST "http://localhost:8080/api/v1.1/auth/login" -H "Content-Type: application/json" -d "{\"username\": \"user1\", \"password\": \"pass123\"}"</div>
+            <button class="copy-btn" onclick="copyText(this, 'c-log')">Скопировать</button>
+        </div>
+        <details>
+            <summary>Пример ответа</summary>
+            <pre>{
+  "success": true,
+  "data": {
+    "token": "TK48291",
+    "role": "admin",
+    "ttl_seconds": 300,
+    "created_at": "2026-10-09 12:53:00",
+    "expires_at": "2026-10-09 12:58:00"
+  },
+  "response_time": "2026-10-09 12:53:00"
+}</pre>
+        </details>
+    </div>
+
+    <div class="nav-container">
+        <a class="nav-btn" href="/docs/protected">Защищенная зона &rarr;</a>
+    </div>
+
+</body>
+</html>

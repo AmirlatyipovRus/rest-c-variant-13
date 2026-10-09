@@ -1,0 +1,50 @@
+body { font-family: Georgia, serif; line-height: 1.5; max-width: 800px; margin: 0 auto; padding: 20px; color: #222; background: #fff; font-size: 1.05em; }
+h2, h3 { text-align: center; font-weight: normal; margin-top: 30px; }
+h2 { font-size: 1.5em; }
+h3 { font-size: 1.2em; }
+p { margin-bottom: 15px; text-align: justify; }
+
+/* Адаптивные таблицы против появления скроллинга */
+.table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.85em; }
+th, td { padding: 8px 10px; border: 1px solid #333; text-align: left; word-break: break-word; }
+th { font-weight: bold; text-align: center; }
+
+/* Автоматическое выравнивание по центру коротких колонок через CSS без классов */
+table:first-of-type td:not(:first-child) { text-align: center; }
+table:last-of-type td:nth-child(3), table:last-of-type td:nth-child(4) { text-align: center; }
+
+/* Прямоугольные карточки для эндпоинтов */
+.endpoint-card { border: 1px solid #333; padding: 15px; margin-bottom: 20px; border-radius: 4px; }
+
+/* Крупный синий шрифт для методов и путей */
+.method-path { font-family: monospace; font-weight: bold; font-size: 1.25em; color: #1e3a8a; margin: 0 0 10px 0; letter-spacing: -0.5px; }
+
+/* Блоки для копирования cURL */
+.curl-box { display: flex; align-items: center; background: #fafafa; border: 1px solid #333; border-radius: 4px; padding: 8px; margin: 10px 0; }
+.curl-text { font-family: monospace; font-size: 0.9em; flex-grow: 1; color: #000; white-space: pre-wrap; word-break: break-all; }
+
+/* Кнопки */
+.copy-btn { background: #fff; border: 1px solid #333; padding: 4px 10px; font-size: 0.85em; font-family: Georgia, serif; cursor: pointer; margin-left: 12px; border-radius: 2px; flex-shrink: 0; align-self: flex-start; }
+.copy-btn:hover { background: #222; color: #fff; }
+.nav-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 30px; }
+.nav-btn { display: inline-block; background: #fff; border: 1px solid #333; padding: 10px 20px; font-size: 0.9em; text-decoration: none; color: #000; font-weight: bold; border-radius: 4px; text-align: center; }
+.nav-btn:hover { background: #222; color: #fff; }
+
+/* Стиль для сворачиваемых блоков разделов высшего уровня */
+body > details { margin-bottom: 25px; border: 1px solid #333; padding: 12px; border-radius: 4px; }
+body > details > summary { font-size: 1.2em; font-weight: normal; text-decoration: none; padding: 5px; cursor: pointer; }
+
+/* Сворачиваемые примеры JSON-ответов */
+.endpoint-card details summary { font-size: 0.9em; font-weight: bold; cursor: pointer; margin-top: 10px; outline: none; text-decoration: underline; }
+.endpoint-card details summary:hover { text-decoration: none; }
+pre { font-family: monospace; font-size: 0.85em; color: #000; background: #fafafa; border: 1px dashed #777; padding: 10px; border-radius: 4px; overflow-x: auto; margin: 8px 0 0 0; }
+
+/* Мобильная адаптация */
+@media (max-width: 600px) {
+    body { font-size: 1em; padding: 10px; }
+    th, td { padding: 6px; font-size: 0.75em; }
+    .method-path { font-size: 1.15em; }
+    .nav-container { flex-direction: column; gap: 10px; }
+    .nav-btn { width: 100%; box-sizing: border-box; }
+}
