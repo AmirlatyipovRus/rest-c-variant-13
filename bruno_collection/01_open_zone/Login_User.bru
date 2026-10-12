@@ -1,0 +1,34 @@
+meta {
+  name: Login User
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/api/v1.1/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "admin1",
+    "password": "admin1"
+  }
+}
+
+script:post-response {
+  try {
+    if (res && res.status === 200) {
+      var responseBody = res.body;
+      if (typeof responseBody === 'string') {
+        responseBody = JSON.parse(responseBody);
+      }
+      if (responseBody && responseBody.token) {
+        bru.setVar("authToken", responseBody.token);
+      }
+    }
+  } catch (e) {
+    console.log("Ошибка сохраненеия токена: " + e);
+  }
+}

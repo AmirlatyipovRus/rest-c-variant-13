@@ -1,0 +1,26 @@
+meta {
+  name: Execute Calculation (Valid Data)
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/api/v1.1/works/calc
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "data": [1034, 20, 30]
+  }
+}
+
+vars:pre-request {
+  authToken: TK0C1BE55955
+}

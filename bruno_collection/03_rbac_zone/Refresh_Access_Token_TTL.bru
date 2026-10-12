@@ -1,0 +1,19 @@
+meta {
+  name: Refresh Access Token TTL
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/api/v1.1/auth/refresh
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+vars:pre-request {
+  authToken: TK0C1BE55955
+}
