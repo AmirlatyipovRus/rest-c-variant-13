@@ -43,3 +43,4 @@ rules.ninja
 
 # Временные файлы текстовой базы данных пользователей
 data/users.txt
+build.ninja
