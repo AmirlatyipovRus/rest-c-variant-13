@@ -1,0 +1,17 @@
+{
+  "name": "local",
+  "variables": [
+    {
+      "name": "authToken",
+      "value": "12345",
+      "type": "text",
+      "enabled": true,
+      "secret": false
+    }
+  ],
+  "info": {
+    "type": "bruno-environment",
+    "exportedAt": "2026-10-12T21:21:39.700Z",
+    "exportedUsing": "Bruno/v1.0.0"
+  }
+}

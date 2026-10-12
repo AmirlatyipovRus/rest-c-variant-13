@@ -1,22 +1,32 @@
 cmake_minimum_required(VERSION 3.10)
-project(rest_c_server VERSION 1.1)
+project(rest_c_server VERSION 1.0)
 
+# ----------------------------------------------------------------------------
+# Стандарт C++17 (нужен для inline-переменных и structured bindings)
+# ----------------------------------------------------------------------------
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Поиск всех исходных файлов бэкенда в папках
-file(GLOB_RECURSE SOURCES "main.cpp" "src/routes/*.hpp")
-add_executable(rest_server_bin ${SOURCES})
+# ----------------------------------------------------------------------------
+# Собираем все .cpp и .hpp файлы проекта
+# ----------------------------------------------------------------------------
+file(GLOB_RECURSE SOURCES "main.cpp" "src/**/*.hpp" "src/**/*.cpp")
+add_executable(rest_server ${SOURCES})
 
-# Подключение библиотеки потоков
+# ----------------------------------------------------------------------------
+# Многопоточность (используется httplib.h)
+# ----------------------------------------------------------------------------
 find_package(Threads REQUIRED)
-target_link_libraries(rest_server_bin PRIVATE Threads::Threads)
+target_link_libraries(rest_server PRIVATE Threads::Threads)
 
+# ----------------------------------------------------------------------------
+# Платформенные зависимости
+# ----------------------------------------------------------------------------
 if(WIN32)
-    # Линковка системной сетевой библиотеки для Windows сокетов
-    target_link_libraries(rest_server_bin PRIVATE "ws2_32")
+    # Windows: сокеты линкуются отдельно
+    target_link_libraries(rest_server PRIVATE ws2_32)
 else()
-    # Автопоиск нативной системной СУБД для macOS и Linux
+    # Linux / macOS: системная SQLite
     find_package(SQLite3 REQUIRED)
-    target_link_libraries(rest_server_bin PRIVATE SQLite3::SQLite3)
+    target_link_libraries(rest_server PRIVATE SQLite3::SQLite3)
 endif()

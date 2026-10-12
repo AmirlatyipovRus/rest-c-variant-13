@@ -18,17 +18,6 @@ body:json {
 }
 
 script:post-response {
-  try {
-    if (res && res.status === 200) {
-      var responseBody = res.body;
-      if (typeof responseBody === 'string') {
-        responseBody = JSON.parse(responseBody);
-      }
-      if (responseBody && responseBody.token) {
-        bru.setVar("authToken", responseBody.token);
-      }
-    }
-  } catch (e) {
-    console.log("Ошибка сохраненеия токена: " + e);
-  }
+  const data = res.getBody();
+  bru.setEnvVar("authToken", data.token, { persist: true });
 }
