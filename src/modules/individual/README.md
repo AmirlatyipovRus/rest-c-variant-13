@@ -65,8 +65,6 @@
 | PUT | `/api/v1.1/auth/users/password` (себе) |
 | POST | `/api/v1.1/works/calc` |
 | GET | `/api/v1.1/works/history` |
-| POST | `/api/v1.1/works/calc-individual` |
-| GET | `/api/v1.1/works/history-individual` |
 
 #### Административные
 
@@ -104,7 +102,7 @@
 ### 4.1. Что нужно сделать
 
 1. Изучить шаблон `variant_roi.hpp`.
-2. Создать `variant_mine.hpp` на его основе.
+2. Создать `variant_mine.hpp` на его основе для решения индивидуальной задачи (уточнить у преподавателя).
 3. Реализовать:
    - структуры `Input` и `Output`;
    - `parse()` — разбор JSON-тела;
@@ -136,7 +134,6 @@
 Успешный расчёт сохраняется в таблицу `works`:
 - `user_id`, `datetime`, `input_json`, `result_json`.
 
-История доступна через `GET /api/v1.1/works/history-individual`.
 
 ---
 
