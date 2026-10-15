@@ -65,6 +65,10 @@ int main() {
         return httplib::Server::HandlerResponse::Unhandled;
     });
 
+   svr.Options(R"(.*)", [](const httplib::Request&, httplib::Response& res) {
+        res.status = 204;
+    });    
+
     // ---- 8. Healthcheck ----
     svr.Get("/health", [](const httplib::Request&, httplib::Response& res) {
         JObj o;

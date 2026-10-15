@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Коллекция запросов</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    margin: 0; background: #f5f7fa; color: #1f2937;
+    display: grid; grid-template-columns: 300px 1fr; height: 100vh;
+  }
+  aside {
+    background: #ffffff; padding: 14px 12px; overflow-y: auto;
+    border-right: 1px solid #e5e7eb;
+  }
+  aside .token-bar {
+    background: #fef3c7; border: 1px solid #fcd34d;
+    color: #78350f; padding: 8px 10px; border-radius: 6px;
+    font-size: 11px; font-family: ui-monospace, Consolas, monospace;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    margin-bottom: 12px;
+  }
+  aside .token-bar.ok { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
+  aside .token-bar span { font-weight: 600; }
+
+  .section { margin-bottom: 6px; }
+  .section > header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px;
+    background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px;
+    cursor: pointer; user-select: none;
+    font-size: 14px; font-weight: 600; color: #1e3a8a;
+    transition: background 0.12s;
+  }
+  .section > header:hover { background: #eff6ff; border-color: #bfdbfe; }
+  .section > header .arrow {
+    font-size: 11px; color: #60a5fa;
+    transition: transform 0.18s ease;
+  }
+  .section.open > header .arrow { transform: rotate(90deg); }
+
+  .section > .items {
+    overflow: hidden; max-height: 0;
+    transition: max-height 0.22s ease;
+  }
+  .section.open > .items { max-height: 500px; padding-top: 6px; }
+
+  .section .items button {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%; text-align: left;
+    padding: 7px 10px; margin-bottom: 3px;
+    background: #ffffff; color: #1f2937;
+    border: 1px solid #e5e7eb; border-radius: 6px;
+    cursor: pointer; font-size: 12.5px; font-family: inherit;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .section .items button:hover { background: #f3f4f6; }
+  .section .items button.active {
+    background: #dbeafe; color: #1e3a8a;
+    border-color: #93c5fd; font-weight: 600;
+  }
+
+  .method-tag {
+    display: inline-block;
+    min-width: 58px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-align: center;
+    font-family: ui-monospace, Consolas, monospace;
+    flex-shrink: 0;
+  }
+  .method-tag.get    { background: #d1fae5; color: #065f46; }
+  .method-tag.post   { background: #fef3c7; color: #78350f; }
+  .method-tag.put    { background: #ffedd5; color: #9a3412; }
+  .method-tag.delete { background: #fee2e2; color: #991b1b; }
+
+  main {
+    padding: 20px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .card {
+    background: #ffffff; border-radius: 10px; padding: 16px;
+    border: 1px solid #e5e7eb; box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .card h3 { margin: 0 0 12px; font-size: 14px; color: #111827; font-weight: 600; }
+
+  input, select, textarea {
+    background: #ffffff; color: #1f2937;
+    border: 1px solid #d1d5db; border-radius: 6px;
+    padding: 8px 10px; font-family: inherit; font-size: 13px; width: 100%;
+    transition: border-color 0.12s, box-shadow 0.12s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none; border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+  }
+  textarea {
+    min-height: 80px;
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 12px; resize: vertical;
+  }
+
+  .row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .row > select { width: 110px; }
+  .row > input  { flex: 1; }
+  .row > button {
+    padding: 8px 22px; background: #3b82f6; color: #ffffff;
+    border: none; border-radius: 6px; cursor: pointer;
+    font-weight: 600; font-size: 13px; transition: background 0.12s;
+  }
+  .row > button:hover { background: #2563eb; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  label { display: block; font-size: 12px; color: #6b7280; margin-bottom: 5px; font-weight: 500; }
+
+  .status {
+    display: inline-block; padding: 4px 10px; border-radius: 6px;
+    font-weight: 600; font-size: 13px;
+  }
+  .status.ok   { background: #d1fae5; color: #065f46; }
+  .status.warn { background: #fef3c7; color: #78350f; }
+  .status.err  { background: #fee2e2; color: #991b1b; }
+
+  pre {
+    background: #f9fafb; border: 1px solid #e5e7eb; padding: 12px;
+    border-radius: 6px; font-family: ui-monospace, Consolas, monospace;
+    font-size: 12px; overflow-x: auto; margin: 0;
+    white-space: pre-wrap; word-break: break-word; color: #111827;
+  }
+
+  .toolbar { display: flex; gap: 8px; }
+  .toolbar button {
+    padding: 6px 14px; background: #f3f4f6; color: #1f2937;
+    border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer;
+    font-size: 12px; font-family: inherit;
+  }
+  .toolbar button:hover { background: #e5e7eb; }
+
+  .copy-wrap { position: relative; }
+  .copy-wrap .copy-btn {
+    position: absolute; top: 6px; right: 6px;
+    padding: 3px 9px;
+    background: #f3f4f6; color: #374151;
+    border: 1px solid #d1d5db; border-radius: 5px;
+    font-size: 11px; font-family: inherit; cursor: pointer;
+    opacity: 0.85; transition: background 0.12s, opacity 0.12s;
+    z-index: 1;
+  }
+  .copy-wrap .copy-btn:hover { background: #e5e7eb; opacity: 1; }
+  .copy-wrap .copy-btn.copied {
+    background: #d1fae5; color: #065f46; border-color: #6ee7b7;
+  }
+  .copy-wrap > textarea, .copy-wrap > pre { padding-right: 110px; }
+
+  #history > div {
+    padding: 7px 0; border-bottom: 1px solid #f3f4f6;
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 13px; color: #374151;
+    display: flex; gap: 12px; align-items: baseline;
+  }
+  #history > div .ts { color: #6b7280; font-size: 12px; min-width: 145px; }
+  #history > div .method { font-weight: 700; color: #1e3a8a; min-width: 60px; }
+  #history > div .url { color: #374151; flex: 1; word-break: break-all; }
+  #history > div .code { font-weight: 700; }
+  #history > div .code.ok   { color: #059669; }
+  #history > div .code.warn { color: #d97706; }
+  #history > div .code.err  { color: #dc2626; }
+
+  #history > div .copy-line {
+    padding: 2px 8px;
+    background: #f3f4f6; color: #374151;
+    border: 1px solid #d1d5db; border-radius: 5px;
+    font-size: 11px; cursor: pointer; font-family: inherit;
+    transition: background 0.12s;
+  }
+  #history > div .copy-line:hover { background: #e5e7eb; }
+  #history > div .copy-line.copied {
+    background: #d1fae5; color: #065f46; border-color: #6ee7b7;
+  }
+
+  #history > .curl-details {
+    padding: 6px 0 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  #history > .curl-details pre {
+    background: #f9fafb; border: 1px solid #e5e7eb;
+    padding: 10px 12px; margin: 0; border-radius: 6px;
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 12px; color: #111827;
+    white-space: pre-wrap; word-break: break-all;
+    cursor: text;
+  }
+</style>
+</head>
+<body>
+
+<aside>
+  <div class="token-bar" id="token-bar">
+    Токен: <span id="token-display">не получен</span>
+  </div>
+
+  <div class="section open">
+    <header onclick="toggleSection(this)">
+      <span>Гостевые эндпоинты</span><span class="arrow">▶</span>
+    </header>
+    <div class="items">
+      <button onclick="loadPreset('health')"><span class="method-tag get">GET</span>Проверка работоспособности</button>
+      <button onclick="loadPreset('counters')"><span class="method-tag get">GET</span>Счётчики системы</button>
+      <button onclick="loadPreset('history')"><span class="method-tag get">GET</span>Общая история расчётов</button>
+      <button onclick="loadPreset('register')"><span class="method-tag post">POST</span>Регистрация нового пользователя</button>
+      <button onclick="loadPreset('login')"><span class="method-tag post">POST</span>Вход в систему</button>
+    </div>
+  </div>
+
+  <div class="section open">
+    <header onclick="toggleSection(this)">
+      <span>Пример: статистика</span><span class="arrow">▶</span>
+    </header>
+    <div class="items">
+      <button onclick="loadPreset('calc')"><span class="method-tag post">POST</span>Расчёт статистики массива</button>
+      <button onclick="loadPreset('works-hist')"><span class="method-tag get">GET</span>Личная история расчётов</button>
+    </div>
+  </div>
+
+  <div class="section open">
+    <header onclick="toggleSection(this)">
+      <span>Индивидуальное задание</span><span class="arrow">▶</span>
+    </header>
+    <div class="items">
+      <button onclick="loadPreset('calc-ind')"><span class="method-tag post">POST</span>Расчёт по своему варианту</button>
+      <button onclick="loadPreset('works-hist-ind')"><span class="method-tag get">GET</span>История по своему варианту</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <header onclick="toggleSection(this)">
+      <span>Профиль пользователя</span><span class="arrow">▶</span>
+    </header>
+    <div class="items">
+      <button onclick="loadPreset('profile')"><span class="method-tag get">GET</span>Профиль текущего пользователя</button>
+      <button onclick="loadPreset('refresh')"><span class="method-tag post">POST</span>Продлить срок действия токена</button>
+      <button onclick="loadPreset('logout')"><span class="method-tag post">POST</span>Выход из системы</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <header onclick="toggleSection(this)">
+      <span>Администрирование</span><span class="arrow">▶</span>
+    </header>
+    <div class="items">
+      <button onclick="loadPreset('users-list')"><span class="method-tag get">GET</span>Список всех пользователей</button>
+      <button onclick="loadPreset('users-pass')"><span class="method-tag put">PUT</span>Сменить пароль пользователя</button>
+      <button onclick="loadPreset('users-del')"><span class="method-tag delete">DELETE</span>Удалить пользователя</button>
+      <button onclick="loadPreset('admin-stats')"><span class="method-tag get">GET</span>Системный журнал (логи)</button>
+      <button onclick="loadPreset('run-tests')"><span class="method-tag get">GET</span>Запустить встроенные тесты</button>
+    </div>
+  </div>
+</aside>
+
+<main>
+  <div class="card">
+    <h3>Запрос</h3>
+    <div class="row">
+      <select id="method">
+        <option>GET</option>
+        <option>POST</option>
+        <option>PUT</option>
+        <option>DELETE</option>
+      </select>
+      <input id="url" placeholder="/api/v1.1/..." value="/health">
+      <button onclick="send()">Отправить</button>
+    </div>
+    <div class="grid-2">
+      <div>
+        <label>Тело запроса (JSON)</label>
+        <div class="copy-wrap">
+          <button class="copy-btn" onclick="copyField('body', this)">Копировать</button>
+          <textarea id="body" placeholder='{"key": "value"}'></textarea>
+        </div>
+      </div>
+      <div>
+        <label>Заголовки</label>
+        <div class="copy-wrap">
+          <button class="copy-btn" onclick="copyField('headers', this)">Копировать</button>
+          <textarea id="headers" readonly>Authorization: Bearer &lt;из токена&gt;
+Content-Type: application/json</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Ответ сервера</h3>
+    <div id="status-box" style="margin-bottom:10px;"></div>
+    <div class="copy-wrap">
+      <button class="copy-btn" onclick="copyField('response', this)">Копировать</button>
+      <pre id="response">—</pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>История запросов</h3>
+    <div class="toolbar">
+      <button onclick="clearHistory()">Очистить</button>
+    </div>
+    <div id="history" style="margin-top:10px;"></div>
+  </div>
+</main>
+
+<script>
+const BASE = "http://localhost:8080";
+const API  = BASE + "/api/v1.1";
+
+let token = localStorage.getItem("token") || "";
+
+function toggleSection(header) {
+  header.parentElement.classList.toggle("open");
+}
+
+function updateTokenUI() {
+  const bar  = document.getElementById("token-bar");
+  const disp = document.getElementById("token-display");
+  if (token) {
+    bar.classList.add("ok");
+    disp.textContent = token.slice(0, 24) + "…";
+  } else {
+    bar.classList.remove("ok");
+    disp.textContent = "не получен";
+  }
+}
+
+const PRESETS = {
+  "health":   { method: "GET", url: BASE + "/health", body: "" },
+  "counters": { method: "GET", url: API + "/counters", body: "" },
+  "history":  { method: "GET", url: API + "/history?limit=10", body: "" },
+  "register": {
+    method: "POST", url: API + "/auth/register",
+    body: JSON.stringify({username: "alice", password: "secret123"}, null, 2)
+  },
+  "login": {
+    method: "POST", url: API + "/auth/login",
+    body: JSON.stringify({username: "user1", password: "user1"}, null, 2)
+  },
+  "calc": {
+    method: "POST", url: API + "/works/calc",
+    body: JSON.stringify({data: [1, 2, 3, 4, 5]}, null, 2)
+  },
+  "works-hist": { method: "GET", url: API + "/works/history?limit=10", body: "" },
+  "calc-ind": {
+    method: "POST", url: API + "/works/calc-individual",
+    body: JSON.stringify({
+      marketing_spend: 10000.0,
+      attributed_revenue: 25000.0,
+      agency_fee: 1500.0,
+      production_cost: 500.0,
+      period_days: 30
+    }, null, 2)
+  },
+  "works-hist-ind": {
+    method: "GET", url: API + "/works/history-individual?limit=10", body: ""
+  },
+  "profile": { method: "GET",  url: API + "/auth/profile", body: "" },
+  "refresh": { method: "POST", url: API + "/auth/refresh", body: "" },
+  "logout":  { method: "POST", url: API + "/auth/logout",  body: "" },
+  "users-list": { method: "GET", url: API + "/auth/users", body: "" },
+  "users-pass": {
+    method: "PUT", url: API + "/auth/users/password",
+    body: JSON.stringify({username: "alice", new_password: "newpass123"}, null, 2)
+  },
+  "users-del": {
+    method: "DELETE", url: API + "/auth/users",
+    body: JSON.stringify({username: "alice"}, null, 2)
+  },
+  "admin-stats": { method: "GET", url: API + "/admin/stats", body: "" },
+  "run-tests":   { method: "GET", url: API + "/admin/run-tests", body: "" }
+};
+
+function loadPreset(name) {
+  const p = PRESETS[name];
+  if (!p) return;
+  document.getElementById("method").value = p.method;
+  document.getElementById("url").value    = p.url;
+  document.getElementById("body").value   = p.body;
+  document.getElementById("response").textContent = "—";
+  document.getElementById("status-box").innerHTML = "";
+
+  document.querySelectorAll("aside button").forEach(b => b.classList.remove("active"));
+  const btn = [...document.querySelectorAll("aside button")]
+    .find(b => b.getAttribute("onclick") === `loadPreset('${name}')`);
+  if (btn) btn.classList.add("active");
+}
+
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const old = btn.textContent;
+    btn.textContent = "✓";
+    btn.classList.add("copied");
+    setTimeout(() => {
+      btn.textContent = old;
+      btn.classList.remove("copied");
+    }, 1000);
+  }).catch(() => {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); } catch {}
+    document.body.removeChild(ta);
+  });
+}
+
+function copyField(elementId, btn) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const text = (el.value !== undefined) ? el.value : el.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const old = btn.textContent;
+    btn.textContent = "✓ Скопировано";
+    btn.classList.add("copied");
+    setTimeout(() => {
+      btn.textContent = old;
+      btn.classList.remove("copied");
+    }, 1200);
+  }).catch(() => {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); } catch {}
+    document.body.removeChild(ta);
+  });
+}
+
+function buildCurl(method, url, body, token) {
+  const parts = [`curl.exe -X ${method} "${url}"`];
+  parts.push(`-H "Content-Type: application/json"`);
+  if (token) parts.push(`-H "Authorization: Bearer ${token}"`);
+  if (body && method !== "GET") {
+    const escaped = body.replace(/"/g, '\\"').replace(/\r?\n/g, "");
+    parts.push(`-d "${escaped}"`);
+  }
+  return parts.join(" ");
+}
+
+async function send() {
+  const method = document.getElementById("method").value;
+  const url    = document.getElementById("url").value;
+  const body   = document.getElementById("body").value.trim();
+
+  const headers = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = "Bearer " + token;
+
+  const opts = { method, headers };
+  if (body && method !== "GET") opts.body = body;
+
+  const statusBox = document.getElementById("status-box");
+  const respBox   = document.getElementById("response");
+  statusBox.innerHTML = '<span class="status warn">…</span>';
+  respBox.textContent = "Ожидание…";
+
+  const t0 = performance.now();
+  try {
+    const res  = await fetch(url, opts);
+    const ms   = Math.round(performance.now() - t0);
+    const text = await res.text();
+
+    let cls = "ok";
+    if (res.status >= 400) cls = "warn";
+    if (res.status >= 500) cls = "err";
+    statusBox.innerHTML =
+      `<span class="status ${cls}">${res.status} ${res.statusText}</span> ` +
+      `<span style="font-size:12px;color:#6b7280;">${ms} мс</span>`;
+
+    try { respBox.textContent = JSON.stringify(JSON.parse(text), null, 2); }
+    catch { respBox.textContent = text; }
+
+    if (url.endsWith("/auth/login") && res.ok) {
+      try {
+        const data = JSON.parse(text);
+        if (data.token) {
+          token = data.token;
+          localStorage.setItem("token", token);
+          updateTokenUI();
+        }
+      } catch {}
+    }
+
+    if (url.endsWith("/auth/logout") && res.ok) {
+      token = "";
+      localStorage.removeItem("token");
+      updateTokenUI();
+    }
+
+    addHistory(method, url, res.status, buildCurl(method, url, body, token));
+  } catch (e) {
+    statusBox.innerHTML = '<span class="status err">Ошибка сети</span>';
+    respBox.textContent = String(e);
+    addHistory(method, url, "ERR", buildCurl(method, url, body, token));
+  }
+}
+
+function addHistory(method, url, status, curlCmd) {
+  const box = document.getElementById("history");
+
+  const now = new Date();
+  const pad = n => String(n).padStart(2, "0");
+  const ts = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()} ` +
+             `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+  let codeCls = "ok";
+  if (status === "ERR" || status >= 500) codeCls = "err";
+  else if (status >= 400)                 codeCls = "warn";
+
+  const details = document.createElement("div");
+  details.className = "curl-details";
+  details.style.display = "none";
+  details.innerHTML = `<pre>${curlCmd.replace(/</g, "&lt;")}</pre>`;
+
+  const row = document.createElement("div");
+  row.innerHTML =
+    `<span class="ts">${ts}</span>` +
+    `<span class="method">${method}</span>` +
+    `<span class="url">${url}</span>` +
+    `<span class="code ${codeCls}">→ ${status}</span>`;
+
+  const curlBtn = document.createElement("button");
+  curlBtn.className = "copy-line";
+  curlBtn.textContent = "curl";
+  curlBtn.title = "Скопировать команду curl";
+  curlBtn.onclick = () => copyText(curlCmd, curlBtn);
+  row.appendChild(curlBtn);
+
+  const urlBtn = document.createElement("button");
+  urlBtn.className = "copy-line";
+  urlBtn.textContent = "URL";
+  urlBtn.title = "Скопировать только URL";
+  urlBtn.onclick = () => copyText(url, urlBtn);
+  row.appendChild(urlBtn);
+
+  row.addEventListener("click", ev => {
+    if (ev.target.tagName === "BUTTON") return;
+    details.style.display = details.style.display === "none" ? "block" : "none";
+  });
+
+  box.prepend(details);
+  box.prepend(row);
+
+  while (box.children.length > 40) box.removeChild(box.lastChild);
+}
+
+function clearHistory() { document.getElementById("history").innerHTML = ""; }
+
+updateTokenUI();
+loadPreset("health");
+
+document.getElementById("url").addEventListener("keydown", e => {
+  if (e.key === "Enter") send();
+});
+</script>
+</body>
+</html>
