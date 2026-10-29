@@ -255,6 +255,7 @@
       <button onclick="loadPreset('users-pass')"><span class="method-tag put">PUT</span>Сменить пароль пользователя</button>
       <button onclick="loadPreset('users-del')"><span class="method-tag delete">DELETE</span>Удалить пользователя</button>
       <button onclick="loadPreset('admin-stats')"><span class="method-tag get">GET</span>Системный журнал (логи)</button>
+      <button onclick="loadPreset('fleet-tests')">20 тестов автопарка</button>
       <button onclick="loadPreset('run-tests')"><span class="method-tag get">GET</span>Запустить встроенные тесты</button>
     </div>
   </div>
@@ -352,11 +353,11 @@ const PRESETS = {
   "calc-ind": {
     method: "POST", url: API + "/works/calc-individual",
     body: JSON.stringify({
-      marketing_spend: 10000.0,
-      attributed_revenue: 25000.0,
-      agency_fee: 1500.0,
-      production_cost: 500.0,
-      period_days: 30
+      total_vehicles: 20,
+      active_vehicles_day: 15,
+      total_fuel_consumed: 300,
+      total_km_driven: 3000,
+      average_fuel_price: 1.5
     }, null, 2)
   },
   "works-hist-ind": {
@@ -375,6 +376,7 @@ const PRESETS = {
     body: JSON.stringify({username: "alice"}, null, 2)
   },
   "admin-stats": { method: "GET", url: API + "/admin/stats", body: "" },
+  "fleet-tests": { method: "GET", url: API + "/admin/run-tests-individual", body: "" },
   "run-tests":   { method: "GET", url: API + "/admin/run-tests", body: "" }
 };
 

@@ -68,7 +68,8 @@ namespace Public {
         // ─── 3. Логи (только admin/owner) ───────────────────────────────────
         svr.Get("/api/v1.1/admin/stats", [](const Request& req, Response& res) {
             string role, name;
-            if (!Auth::auth(req, role, name) || !Auth::admin(role)) {
+            if (!Auth::auth(req, role, name)) { res.status = 401; return; }
+            if (!Auth::admin(role)) {
                 res.status = 403;
                 return;
             }

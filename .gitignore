@@ -45,3 +45,7 @@ rules.ninja
 data/users.txt
 build.ninja
 data/rest.db
+
+/build-*/
+/rest_server
+__pycache__/

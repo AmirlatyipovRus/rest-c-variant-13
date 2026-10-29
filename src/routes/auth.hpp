@@ -153,7 +153,8 @@ namespace Auth {
         // ─── 5. Список пользователей (admin/owner) ──────────────────────────
         svr.Get("/api/v1.1/auth/users", [](const Request& req, Response& res) {
             string role, name;
-            if (!auth(req, role, name) || !admin(role)) { res.status = 403; return; }
+            if (!auth(req, role, name)) { res.status = 401; return; }
+            if (!admin(role)) { res.status = 403; return; }
 
             JArr arr;
             for (auto& r : db_all("SELECT id,username,role FROM users;")) {
@@ -178,6 +179,11 @@ namespace Auth {
             JObj o;
             if (target != name && !admin(role)) {
                 res.status = 403; o.str("error", "Forbidden");
+            } else if (db_row("SELECT id FROM users WHERE username=?;", {target}).empty()) {
+                res.status = 404; o.str("error", "User not found");
+            } else if (role == "admin" && target != name &&
+                       db_row("SELECT role FROM users WHERE username=?;", {target})[0] != "user") {
+                res.status = 403; o.str("error", "Admin can only manage self or user accounts");
             } else if (np.size() < 4) {
                 res.status = 400; o.str("error", "Password too short");
             } else if (db_run("UPDATE users SET password=? WHERE username=?;",
@@ -194,7 +200,8 @@ namespace Auth {
                 // ─── 7. Удаление пользователя (admin/owner) ─────────────────────────
         svr.Delete("/api/v1.1/auth/users", [](const Request& req, Response& res) {
             string role, name;
-            if (!auth(req, role, name) || !admin(role)) { res.status = 403; return; }
+            if (!auth(req, role, name)) { res.status = 401; return; }
+            if (!admin(role)) { res.status = 403; return; }
 
             string target = jget(req.body, "username");
 
@@ -208,6 +215,10 @@ namespace Auth {
             else if (db_row("SELECT id FROM users WHERE username=?;", {target}).empty()) {
                 res.status = 404;
                 o.str("error", "User not found");
+            }
+            else if (role == "admin" && target != name &&
+                     db_row("SELECT role FROM users WHERE username=?;", {target})[0] != "user") {
+                res.status = 403; o.str("error", "Admin can only manage self or user accounts");
             }
             else if (db_run("DELETE FROM users WHERE username=?;", {target})) {
                 write_log("SUCCESS", "User deleted: " + target);

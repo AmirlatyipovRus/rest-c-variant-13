@@ -1,0 +1,426 @@
+{
+  "passed": 70,
+  "failed": 0,
+  "cases": [
+    {
+      "name": "GET /health",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/counters",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/history",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/auth/login",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/auth/login",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/auth/login",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/auth/profile",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/auth/refresh",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/auth/profile",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/auth/refresh",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/auth/profile",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/auth/refresh",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/works/calc-individual",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "total_vehicles=0",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "total_vehicles=20.5",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "total_vehicles=2147483648",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "active_vehicles_day=0",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "active_vehicles_day=21",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "total_fuel_consumed=0",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "total_fuel_consumed=-1",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "total_km_driven=0",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "total_km_driven=22500.1",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "average_fuel_price=0",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "average_fuel_price=1.5",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "Invalid JSON: {}",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "Invalid JSON: []",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "Invalid JSON: null",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "Invalid JSON: {\"total_vehicles\":20,}",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "Invalid JSON: {\"total_vehicles\": 20, \"active_vehicles_day\": 15, ",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "Invalid JSON: {\"total_vehicles\": 20, \"active_vehicles_day\": 15, ",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "Invalid JSON: {\"total_vehicles\": 20, \"active_vehicles_day\": 15, ",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "Invalid JSON: {\"total_vehicles\": 20, \"active_vehicles_day\": 15, ",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "Missing total_vehicles",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "Missing active_vehicles_day",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "Missing total_fuel_consumed",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "Missing total_km_driven",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "Missing average_fuel_price",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/works/calc-individual",
+      "expected": 401,
+      "actual": 401,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/works/calc-individual",
+      "expected": 401,
+      "actual": 401,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/works/calc-individual",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/works/history-individual",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/works/history-individual",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/works/calc",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/works/history",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/auth/users",
+      "expected": 401,
+      "actual": 401,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/auth/users",
+      "expected": 403,
+      "actual": 403,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/auth/users",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/admin/stats",
+      "expected": 401,
+      "actual": 401,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/admin/stats",
+      "expected": 403,
+      "actual": 403,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/admin/stats",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/admin/run-tests",
+      "expected": 401,
+      "actual": 401,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/admin/run-tests",
+      "expected": 403,
+      "actual": 403,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/admin/run-tests",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/admin/run-tests-individual",
+      "expected": 401,
+      "actual": 401,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/admin/run-tests-individual",
+      "expected": 403,
+      "actual": 403,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/admin/run-tests-individual",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/admin/run-tests",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/admin/run-tests-individual",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "PUT /api/v1.1/auth/users/password",
+      "expected": 403,
+      "actual": 403,
+      "passed": true
+    },
+    {
+      "name": "DELETE /api/v1.1/auth/users",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "PUT /api/v1.1/auth/users/password",
+      "expected": 404,
+      "actual": 404,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/auth/register",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/auth/register",
+      "expected": 409,
+      "actual": 409,
+      "passed": true
+    },
+    {
+      "name": "PUT /api/v1.1/auth/users/password",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "DELETE /api/v1.1/auth/users",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/auth/login",
+      "expected": 401,
+      "actual": 401,
+      "passed": true
+    },
+    {
+      "name": "OPTIONS /api/v1.1/works/calc-individual",
+      "expected": 204,
+      "actual": 204,
+      "passed": true
+    },
+    {
+      "name": "GET /no-such-route",
+      "expected": 404,
+      "actual": 404,
+      "passed": true
+    },
+    {
+      "name": "POST /api/v1.1/auth/logout",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "GET /api/v1.1/auth/profile",
+      "expected": 401,
+      "actual": 401,
+      "passed": true
+    }
+  ]
+}

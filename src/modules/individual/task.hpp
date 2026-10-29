@@ -13,14 +13,31 @@
 // ────────────────────────────────────────────────────────────────────────────
 // ПОДКЛЮЧИТЕ СВОЙ ВАРИАНТ ЗДЕСЬ (замените одну строку).
 // ────────────────────────────────────────────────────────────────────────────
-#include "variant_roi.hpp"
-// #include "variant_mine.hpp"
+#include "variant_mine.hpp"
+#include "variant_tests.hpp"
 
 namespace Individual {
     using namespace std;
     using namespace httplib;
 
     inline void init_routes(Server& svr) {
+
+        svr.Get("/api/v1.1/admin/run-tests-individual", [](const Request& req, Response& res) {
+            string role, name;
+            if (!Auth::auth(req, role, name)) { res.status = 401; return; }
+            if (!Auth::admin(role)) { res.status = 403; return; }
+            JArr cases; int passed = 0;
+            const auto tests = FleetTests::run();
+            for (size_t i = 0; i < tests.size(); ++i) {
+                JObj item; item.int_("tc_id", i + 1); item.str("name", tests[i].first);
+                item.str("status", tests[i].second ? "PASSED" : "FAILED");
+                cases.add(item.str()); if (tests[i].second) ++passed;
+            }
+            JObj report; report.str("status", passed == (int)tests.size() ? "success" : "failed");
+            report.int_("total_tests", tests.size()); report.int_("passed", passed);
+            report.int_("failed", tests.size()-passed); report.raw("test_cases", cases.str());
+            res.set_content(report.str(), "application/json");
+        });
 
         // ─── POST /works/calc-individual ────────────────────────────────────
         svr.Post("/api/v1.1/works/calc-individual", [](const Request& req, Response& res) {
@@ -41,9 +58,13 @@ namespace Individual {
             auto out = TaskVariant::calculate(in);
             string result = TaskVariant::to_json(out);
 
-            db_run("INSERT INTO works (user_id,datetime,input_json,result_json) "
+            if (!db_run("INSERT INTO works (user_id,datetime,input_json,result_json) "
                    "VALUES (?,?,?,?);",
-                   {to_string(uid), now_iso(), req.body, result});
+                   {to_string(uid), now_iso(), req.body, result})) {
+                res.status = 500;
+                res.set_content("{\"error\":\"Could not save result\"}", "application/json");
+                return;
+            }
             res.set_content(result, "application/json");
         });
 

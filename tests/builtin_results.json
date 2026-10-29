@@ -1,0 +1,108 @@
+{
+  "status": "success",
+  "total_tests": 20,
+  "passed": 20,
+  "failed": 0,
+  "test_cases": [
+    {
+      "tc_id": 1,
+      "name": "DB handle active",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 2,
+      "name": "Users table accessible",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 3,
+      "name": "Logs table accessible",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 4,
+      "name": "Log write works",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 5,
+      "name": "Hash not empty",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 6,
+      "name": "Verify accepts valid",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 7,
+      "name": "Verify rejects invalid",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 8,
+      "name": "Hash uses unique salt",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 9,
+      "name": "Token unique",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 10,
+      "name": "Token prefix TK",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 11,
+      "name": "Math: count",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 12,
+      "name": "Math: mean",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 13,
+      "name": "Math: median",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 14,
+      "name": "Math: mode",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 15,
+      "name": "Math: variance defined",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 16,
+      "name": "Math: stddev",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 17,
+      "name": "Auth: role admin/owner",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 18,
+      "name": "Auth: user non-empty",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 19,
+      "name": "Config: TTL > 0",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 20,
+      "name": "Config: MAX_HISTORY > 0",
+      "status": "PASSED"
+    }
+  ]
+}

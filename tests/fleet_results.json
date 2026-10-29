@@ -1,0 +1,108 @@
+{
+  "status": "success",
+  "total_tests": 20,
+  "passed": 20,
+  "failed": 0,
+  "test_cases": [
+    {
+      "tc_id": 1,
+      "name": "Control example: all three results",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 2,
+      "name": "Minimum fleet and inclusive 1500 km boundary",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 3,
+      "name": "All vehicles active",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 4,
+      "name": "Zero total vehicles",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 5,
+      "name": "Negative total vehicles",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 6,
+      "name": "Zero active vehicles",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 7,
+      "name": "Active exceeds fleet",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 8,
+      "name": "Zero fuel",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 9,
+      "name": "Negative fuel",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 10,
+      "name": "Zero distance",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 11,
+      "name": "Negative distance",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 12,
+      "name": "Distance above 1500 per active vehicle",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 13,
+      "name": "Zero price",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 14,
+      "name": "Negative price",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 15,
+      "name": "Missing required field",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 16,
+      "name": "String instead of number",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 17,
+      "name": "Fractional vehicle count",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 18,
+      "name": "Integer overflow",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 19,
+      "name": "Malformed JSON and duplicate keys",
+      "status": "PASSED"
+    },
+    {
+      "tc_id": 20,
+      "name": "Exponent input and numeric overflow",
+      "status": "PASSED"
+    }
+  ]
+}
