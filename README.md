@@ -2,7 +2,7 @@
 
 A C++17 coursework project that calculates fleet utilization, fuel consumption per 100 km, and fuel cost per kilometre. It includes a browser API console and stores successful calculations in SQLite.
 
-![Fleet calculation and response in the browser API console](docs/web-success.png)
+![Fleet calculation and response in the browser API console](docs/fleet-api-demo.jpg)
 
 ## Quick start
 
